@@ -496,17 +496,7 @@ impl Client {
                 params.append_pair("not", not);
             }
         }
-        println!("{:#?}", req);
-        let body = self.cli.execute(req).await?.text().await?;
-        println!("{}", body);
-
-        match serde_json::from_str(&body) {
-            Ok(commits) => Ok(commits),
-            Err(e) => Err(TeatimeError {
-                message: format!("{}", e),
-                status_code: StatusCode::BAD_REQUEST,
-            }),
-        }
+        self.make_request(req).await
     }
 
     /// Creates a new DELETE-request builder with the given path.
