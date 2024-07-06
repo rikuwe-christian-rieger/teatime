@@ -571,8 +571,14 @@ impl Client {
                 params.append_pair("limit", &limit.to_string());
             }
         }
+        #[derive(Deserialize)]
+        struct Response {
+            #[allow(dead_code)]
+            ok: bool,
+            data: Vec<Repository>,
+        }
         let res = self.make_request(req).await?;
-        self.parse_response(res).await
+        Ok(self.parse_response::<Response>(res).await?.data)
     }
 
     /// Deletes a repository by its owner and name.
