@@ -121,6 +121,48 @@ pub struct CreateRepoOption {
     pub trust_model: TrustModel,
 }
 
+/// Options for searching repositories.
+/// All fields are optional.
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct SearchRepositoriesOption {
+    /// Keyword to search for
+    pub q: Option<String>,
+    /// Limit search to repositories with keyword as topic
+    pub topic: Option<bool>,
+    /// Include search of keyword within repository description
+    #[serde(rename = "include_desc")]
+    pub include_desc: Option<bool>,
+    /// Search only for repos that the user with the given id owns or contributes to
+    pub uid: Option<i64>,
+    /// Repo owner to prioritize in the results
+    pub priority_owner_id: Option<i64>,
+    /// Search only for repos that belong to the given team id
+    pub team_id: Option<i64>,
+    /// Search only for repos that the user with the given id has starred
+    #[serde(rename = "starredBy")]
+    pub starred_by: Option<i64>,
+    /// Include private repositories this user has access to (defaults to true)
+    pub private: Option<bool>,
+    /// Show only pubic, private or all repositories (defaults to all)
+    pub is_private: Option<bool>,
+    /// Include template repositories this user has access to (defaults to true)
+    pub template: Option<bool>,
+    /// Show only archived, non-archived or all repositories (defaults to all)
+    pub archived: Option<bool>,
+    /// Type of repository to search for. Supported values are "fork", "source", "mirror" and "collaborative"
+    pub mode: Option<String>,
+    /// If uid is given, search only for repos that the user owns
+    pub exclusive: Option<bool>,
+    /// Sort repos by attribute. Supported values are "alpha", "created", "updated", "size", and "id". Default is "alpha"
+    pub sort: Option<String>,
+    /// Sort order, either "asc" (ascending) or "desc" (descending). Default is "asc", ignored if "sort" is not specified.
+    pub order: Option<String>,
+    /// Page number of results to return (1-based)
+    pub page: Option<i32>,
+    /// Page size of results
+    pub limit: Option<i32>,
+}
+
 /// Options for getting a list of commits from a repository.
 /// All fields are optional.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -402,6 +444,90 @@ impl Client {
     ///
     pub async fn get_repository(&self, owner: &str, repo: &str) -> Result<Repository> {
         let req = self.get(format!("repos/{owner}/{repo}")).build()?;
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
+    }
+
+    /// Searches for repositories based on the given search options.
+    /// All fields in the [SearchRepositoriesOption] are optional.
+    /// This method will return a list of repositories that match the search criteria.
+    ///
+    /// # Example
+    /// ```rust
+    /// # use teatime::{Client, SearchRepositoriesOption};
+    /// # async fn search_repos() {
+    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// "e8ffd828994fc890156c56004e9f16eef224d8b0".to_string());
+    /// let search_option = SearchRepositoriesOption {
+    ///    q: Some("my-repo".to_string()),
+    ///    ..Default::default()
+    ///    };
+    /// let repos = client.search_repositories(&search_option).await.unwrap();
+    /// # }
+    /// ```
+    /// This will search for repositories matching the keyword "my-repo".
+    /// The search will include the repository description and will return the first page of
+    /// results.
+    pub async fn search_repositories(
+        &self,
+        search_option: &SearchRepositoriesOption,
+    ) -> Result<Vec<Repository>> {
+        let mut req = self.get("repos/search".to_string()).build()?;
+        {
+            let mut params = req.url_mut().query_pairs_mut();
+
+            if let Some(q) = &search_option.q {
+                params.append_pair("q", q);
+            }
+            if let Some(topic) = &search_option.topic {
+                params.append_pair("topic", &topic.to_string());
+            }
+            if let Some(include_desc) = &search_option.include_desc {
+                params.append_pair("include_desc", &include_desc.to_string());
+            }
+            if let Some(uid) = &search_option.uid {
+                params.append_pair("uid", &uid.to_string());
+            }
+            if let Some(priority_owner_id) = &search_option.priority_owner_id {
+                params.append_pair("priority_owner_id", &priority_owner_id.to_string());
+            }
+            if let Some(team_id) = &search_option.team_id {
+                params.append_pair("team_id", &team_id.to_string());
+            }
+            if let Some(starred_by) = &search_option.starred_by {
+                params.append_pair("starredBy", &starred_by.to_string());
+            }
+            if let Some(private) = &search_option.private {
+                params.append_pair("private", &private.to_string());
+            }
+            if let Some(is_private) = &search_option.is_private {
+                params.append_pair("is_private", &is_private.to_string());
+            }
+            if let Some(template) = &search_option.template {
+                params.append_pair("template", &template.to_string());
+            }
+            if let Some(archived) = &search_option.archived {
+                params.append_pair("archived", &archived.to_string());
+            }
+            if let Some(mode) = &search_option.mode {
+                params.append_pair("mode", mode);
+            }
+            if let Some(exclusive) = &search_option.exclusive {
+                params.append_pair("exclusive", &exclusive.to_string());
+            }
+            if let Some(sort) = &search_option.sort {
+                params.append_pair("sort", sort);
+            }
+            if let Some(order) = &search_option.order {
+                params.append_pair("order", order);
+            }
+            if let Some(page) = &search_option.page {
+                params.append_pair("page", &page.to_string());
+            }
+            if let Some(limit) = &search_option.limit {
+                params.append_pair("limit", &limit.to_string());
+            }
+        }
         let res = self.make_request(req).await?;
         self.parse_response(res).await
     }
