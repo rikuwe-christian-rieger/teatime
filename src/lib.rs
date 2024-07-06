@@ -505,7 +505,7 @@ impl Client {
         let status = res.status();
         if status.is_client_error() || status.is_server_error() {
             return Err(TeatimeError {
-                message: res.text().await?,
+                message: res.text().await.unwrap_or_default(),
                 kind: error::TeatimeErrorKind::HttpError,
                 status_code: status,
             });
