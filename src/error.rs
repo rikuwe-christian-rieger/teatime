@@ -5,15 +5,15 @@ use reqwest::StatusCode;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TeatimeErrorKind {
-    AuthError,
-    RepoCreateError,
+    HttpError,
+    SerializationError,
 }
 
 impl Display for TeatimeErrorKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            TeatimeErrorKind::AuthError => write!(f, "AuthError"),
-            TeatimeErrorKind::RepoCreateError => write!(f, "RepoCreateError"),
+            TeatimeErrorKind::HttpError => write!(f, "HTTP error"),
+            TeatimeErrorKind::SerializationError => write!(f, "Serialization error"),
         }
     }
 }
@@ -23,6 +23,7 @@ impl Display for TeatimeErrorKind {
 #[derive(Debug, Clone)]
 pub struct TeatimeError {
     pub message: String,
+    pub kind: TeatimeErrorKind,
     pub status_code: reqwest::StatusCode,
 }
 impl Error for TeatimeError {}
@@ -41,9 +42,14 @@ pub type Result<T> = std::result::Result<T, TeatimeError>;
 /// of a [reqwest::Result].
 impl From<reqwest::Error> for TeatimeError {
     fn from(err: reqwest::Error) -> Self {
+        let mut kind = TeatimeErrorKind::HttpError;
+        if err.is_decode() {
+            kind = TeatimeErrorKind::SerializationError;
+        }
         TeatimeError {
             message: format!("{}", err),
             status_code: err.status().unwrap_or(StatusCode::BAD_REQUEST),
+            kind,
         }
     }
 }
