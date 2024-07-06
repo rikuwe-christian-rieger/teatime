@@ -43,7 +43,7 @@ use error::{Result, TeatimeError};
 use std::fmt::Display;
 
 use reqwest::header::{self, HeaderMap, HeaderValue};
-use reqwest::{Method, StatusCode};
+use reqwest::{Method, Response};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 pub mod error;
@@ -382,7 +382,8 @@ impl Client {
         create_option: &CreateRepoOption,
     ) -> Result<Repository> {
         let req = self.post("user/repos").json(create_option).build()?;
-        self.make_request(req).await
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
     }
 
     /// Gets a repository by its owner and name.
@@ -401,7 +402,8 @@ impl Client {
     ///
     pub async fn get_repository(&self, owner: &str, repo: &str) -> Result<Repository> {
         let req = self.get(format!("repos/{owner}/{repo}")).build()?;
-        self.make_request(req).await
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
     }
 
     /// Deletes a repository by its owner and name.
@@ -419,7 +421,8 @@ impl Client {
     /// # }
     pub async fn delete_repository(&self, owner: &str, repo: &str) -> Result<()> {
         let req = self.delete(format!("repos/{owner}/{repo}")).build()?;
-        self.make_request(req).await
+        self.make_request(req).await?;
+        Ok(())
     }
 
     /// Gets a list of commits for a repository.
@@ -465,7 +468,8 @@ impl Client {
                 params.append_pair("not", not);
             }
         }
-        self.make_request(req).await
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
     }
 
     /// Creates a new DELETE-request builder with the given path.
@@ -493,14 +497,13 @@ impl Client {
         self.cli
             .request(method, format!("{}/api/v1/{}", self.base_url, path))
     }
-    /// Sends a request and deserializes the json-response into the given type.
+    /// Sends a request and checks the response for errors.
     /// You may use this method to talk to the Gitea API directly if you need to.
-    /// This method will return a [TeatimeError] if the request fails or the response cannot be
-    /// deserialized into the given type.
-    /// NOTE: This method is not recommended for general use. Use the more specific methods
+    /// This method will return a [TeatimeError] if the request fails.
+    /// /// NOTE: This method is not recommended for general use. Use the more specific methods
     /// provided by the [Client] struct if they exist.
     /// You are responsible for providing the correct Model for the response.
-    pub async fn make_request<T: DeserializeOwned>(&self, req: reqwest::Request) -> Result<T> {
+    pub async fn make_request(&self, req: reqwest::Request) -> Result<Response> {
         let res = self.cli.execute(req).await?;
         let status = res.status();
         if status.is_client_error() || status.is_server_error() {
@@ -510,6 +513,15 @@ impl Client {
                 status_code: status,
             });
         }
+        Ok(res)
+    }
+    /// Parses a json response into a given model.
+    /// You may use this method to talk to the Gitea API directly if you need to.
+    /// This method will return a [TeatimeError] if the response cannot be deserialized.
+    /// /// NOTE: This method is not recommended for general use. Use the more specific methods
+    /// provided by the [Client] struct if they exist.
+    /// You are responsible for providing the correct Model for the response.
+    pub async fn parse_response<T: DeserializeOwned>(&self, res: reqwest::Response) -> Result<T> {
         res.json::<T>().await.map_err(|e| e.into())
     }
 }
