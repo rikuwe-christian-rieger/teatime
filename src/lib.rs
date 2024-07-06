@@ -39,7 +39,7 @@
 //! # }
 //! ```
 //!
-use error::{TeatimeError, Result};
+use error::{Result, TeatimeError};
 use std::fmt::Display;
 
 use reqwest::header::{self, HeaderMap, HeaderValue};
@@ -501,12 +501,16 @@ impl Client {
     /// provided by the [Client] struct if they exist.
     /// You are responsible for providing the correct Model for the response.
     pub async fn make_request<T: DeserializeOwned>(&self, req: reqwest::Request) -> Result<T> {
-        self.cli
-            .execute(req)
-            .await?
-            .json::<T>()
-            .await
-            .map_err(|e| e.into())
+        let res = self.cli.execute(req).await?;
+        let status = res.status();
+        if status.is_client_error() || status.is_server_error() {
+            return Err(TeatimeError {
+                message: res.text().await?,
+                kind: error::TeatimeErrorKind::HttpError,
+                status_code: status,
+            });
+        }
+        res.json::<T>().await.map_err(|e| e.into())
     }
 }
 
