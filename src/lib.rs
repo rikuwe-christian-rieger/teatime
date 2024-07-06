@@ -400,6 +400,49 @@ impl Client {
         Self { cli, base_url }
     }
 
+    /// Gets the currently authenticated user.
+    /// This will return a [User] object representing the currently authenticated user.
+    /// As long as the token is valid, this method will always return a user.
+    ///
+    /// # Example
+    /// ```rust
+    /// # use teatime::Client;
+    /// # async fn get_authenticated_user() {
+    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// "6adb63fdb8fcfa101207281cdf5e1d28b125e9ec".to_string());
+    /// let user = client.get_authenticated_user().await.unwrap();
+    /// # }
+    pub async fn get_authenticated_user(&self) -> Result<User> {
+        let req = self.get("user").build()?;
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
+    }
+
+    /// Gets a user by their username.
+    /// This will return a [User] object if the user exists and is visible to the currently
+    /// authenticated user.
+    /// If the user does not exist or is not visible, this method will return a 404 status code and
+    /// an empty response.
+    ///
+    /// # Example
+    /// ```rust
+    /// # use teatime::Client;
+    /// # async fn get_user() {
+    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// "5fda63fdbbfcfd131607881cda5e1d28a215e9e1".to_string());
+    /// let user = client.get_user("username
+    /// ").await.unwrap();
+    /// # }
+    /// ```
+    /// This will get the user with the username "username".
+    /// If the user does not exist, this method will return a [TeatimeError] with a 404 status code.
+    ///
+    pub async fn get_user(&self, username: &str) -> Result<User> {
+        let req = self.get(format!("users/{}", username)).build()?;
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
+    }
+
     /// Creates a new repository for the authenticated user.
     /// The only required field in the [CreateRepoOption] is `name`.
     /// All other fields are optional.
