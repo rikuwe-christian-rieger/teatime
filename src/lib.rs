@@ -727,6 +727,33 @@ impl Client {
         self.parse_response(res).await
     }
 
+    /// Creates a new access token for a user.
+    /// Technically, only the `name` field is required, but it's recommended to set the `scopes`
+    /// since the token will usually have no permissions without them (which can lead to an error
+    /// on gitea's side despite the token being created).
+    /// NOTE: This endpoint requires basic authentication and will fail otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// # use teatime::{Client, CreateAccessTokenOption, Auth};
+    /// # async fn create_token() {
+    /// let client = Client::new("https://gitea.example.com", Auth::Basic("username", "password"));
+    /// let options = CreateAccessTokenOption {
+    ///   name: "my-new-token".to_string(),
+    ///   scopes: Some(vec!["read:user".to_string(), "write:repository".to_string()]),
+    /// };
+    /// let token = client.create_access_token("username", &options).await.unwrap();
+    /// println!("Token {} created: {}", token.name, token.sha1);
+    /// let new_client = Client::new("https://gitea.example.com", Auth::Token(token.sha1));
+    /// # }
+    /// ```
+    /// This will create a new token with the name "my-new-token", which can read all user data and
+    /// read and write to repositories.
+    ///
+    /// If the token is successfully created, this method will return a [AccessToken] object.
+    /// If the user is not authenticated correctly (e.g. not using basic auth), this method will
+    /// return a 403 status code.
+    /// In case of any client-side errors, this method will return a 400 status code.
     pub async fn create_access_token<A: ToString>(
         &self,
         username: A,
@@ -741,6 +768,25 @@ impl Client {
         self.parse_response(res).await
     }
 
+    /// Deletes an access token by its username and token.
+    /// This will delete the token and revoke all permissions associated with it.
+    /// NOTE: This endpoint requires basic authentication and will fail otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// # use teatime::{Client, Auth};
+    /// # async fn delete_token() {
+    /// let client = Client::new("https://gitea.example.com", Auth::Basic("username", "password"));
+    /// client.delete_access_token("username", "token-name").await.unwrap();
+    /// # }
+    /// ```
+    /// This will delete the token with the name "token-name" for the user "username".
+    ///
+    /// If the token does not exist, this method will return a 404 status code.
+    /// If the target user is not the authenticated user and the authenticated user is not an
+    /// administrator, this method will return a 403 status code.
+    /// For any client-side other errors, this method will return a 422 status code.
+    /// If the token is successfully deleted, this method will return a 204 status code.
     pub async fn delete_access_token<A: ToString, B: ToString>(
         &self,
         username: A,
