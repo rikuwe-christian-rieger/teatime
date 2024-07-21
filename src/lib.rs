@@ -12,7 +12,7 @@
 //! ```rust
 //! # use teatime::{Client, CreateRepoOption, Auth};
 //! # async fn create_repo() {
-//! let client = Client::new("https://gitea.example.com".to_string(), Auth::Token("your-token"));
+//! let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
 //! let create_option = CreateRepoOption {
 //!     // `name` is the only required field
 //!     name: "my-new-repo".to_string(),
@@ -27,7 +27,7 @@
 //! ```rust
 //! # use teatime::{Client, GetCommitsOption, Auth};
 //! # async fn get_commits() {
-//! let client = Client::new("https://gitea.example.com".to_string(), Auth::Token("your-token"));
+//! let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
 //! let get_option = GetCommitsOption {
 //!     // `GetCommitsOption` has a number of optional fields to filter the results,
 //!     // but none are required. In this example, we're just setting the `limit` to 10 to
@@ -44,7 +44,7 @@
 //! # use teatime::{Client, CreateAccessTokenOption, Auth};
 //! # async fn create_access_token() {
 //! let basic = Auth::Basic("username", "password");
-//! let client = Client::new("https://gitea.example.com".to_string(), basic);
+//! let client = Client::new("https://gitea.example.com", basic);
 //! let create_option = CreateAccessTokenOption {
 //!    name: "my-new-token".to_string(),
 //!    ..Default::default()
@@ -52,7 +52,7 @@
 //! let token = client.create_access_token("username", &create_option).await.unwrap();
 //! println!("Token {} created: {}", token.name, token.sha1);
 //! // You can now create a new client with the token and use it to interact with the API.
-//! let new_client = Client::new("https://gitea.example.com".to_string(), Auth::Token(token.sha1));
+//! let new_client = Client::new("https://gitea.example.com", Auth::Token(token.sha1));
 //! # }
 //!
 //!
@@ -433,7 +433,7 @@ impl Client {
     /// NOTE: The base URL MUST not include the `/api/v1` path and should not contain any trailing
     /// slashes. For example, `https://gitea.example.com` is a valid base URL, but
     /// `https://gitea.example.com/` or `https://gitea.example.com/api/v1` are not.
-    pub fn new<D: ToString>(base_url: String, auth: Auth<D>) -> Self {
+    pub fn new<A: ToString, B: ToString>(base_url: A, auth: Auth<B>) -> Self {
         let mut headers = HeaderMap::new();
         match auth {
             Auth::Token(token) => {
@@ -458,7 +458,10 @@ impl Client {
             .build()
             .expect("client build error");
 
-        Self { cli, base_url }
+        Self {
+            cli,
+            base_url: base_url.to_string(),
+        }
     }
 
     /// Gets the currently authenticated user.
@@ -469,7 +472,7 @@ impl Client {
     /// ```rust
     /// # use teatime::{Client, Auth};
     /// # async fn get_authenticated_user() {
-    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// let client = Client::new("https://gitea.example.com",
     /// Auth::Token("6adb63fdb8fcfa101207281cdf5e1d28b125e9ec"));
     /// let user = client.get_authenticated_user().await.unwrap();
     /// # }
@@ -489,7 +492,7 @@ impl Client {
     /// ```rust
     /// # use teatime::{Client, Auth};
     /// # async fn get_user() {
-    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// let client = Client::new("https://gitea.example.com",
     /// Auth::Token("5fda63fdbbfcfd131607881cda5e1d28a215e9e1"));
     /// let user = client.get_user("username
     /// ").await.unwrap();
@@ -498,8 +501,10 @@ impl Client {
     /// This will get the user with the username "username".
     /// If the user does not exist, this method will return a [TeatimeError] with a 404 status code.
     ///
-    pub async fn get_user(&self, username: &str) -> Result<User> {
-        let req = self.get(format!("users/{}", username)).build()?;
+    pub async fn get_user<A: ToString>(&self, username: A) -> Result<User> {
+        let req = self
+            .get(format!("users/{}", username.to_string()))
+            .build()?;
         let res = self.make_request(req).await?;
         self.parse_response(res).await
     }
@@ -512,7 +517,7 @@ impl Client {
     /// ```rust
     /// # use teatime::{Client, CreateRepoOption, Auth};
     /// # async fn create_repo() {
-    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// let client = Client::new("https://gitea.example.com",
     /// Auth::Token("5fda63fdbbfcfd131607881cda5e1d28a215e9e1"));
     /// let create_option = CreateRepoOption {
     ///    // `name` is the only required field
@@ -540,13 +545,19 @@ impl Client {
     /// ```rust
     /// # use teatime::{Client, Auth};
     /// # async fn get_repo() {
-    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// let client = Client::new("https://gitea.example.com",
     /// Auth::Token("793eae2c1dcd71daf9e6cc0f8a448a39b45d3ff3"));
     /// let repo = client.get_repository("owner", "repo").await.unwrap();
     /// # }
     /// ```
     ///
-    pub async fn get_repository(&self, owner: &str, repo: &str) -> Result<Repository> {
+    pub async fn get_repository<A: ToString, B: ToString>(
+        &self,
+        owner: A,
+        repo: B,
+    ) -> Result<Repository> {
+        let owner = owner.to_string();
+        let repo = repo.to_string();
         let req = self.get(format!("repos/{owner}/{repo}")).build()?;
         let res = self.make_request(req).await?;
         self.parse_response(res).await
@@ -560,7 +571,7 @@ impl Client {
     /// ```rust
     /// # use teatime::{Client, SearchRepositoriesOption, Auth};
     /// # async fn search_repos() {
-    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// let client = Client::new("https://gitea.example.com",
     /// Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
     /// let search_option = SearchRepositoriesOption {
     ///    q: Some("my-repo".to_string()),
@@ -651,11 +662,17 @@ impl Client {
     /// ```rust
     /// # use teatime::{Client, Auth};
     /// # async fn delete_repo() {
-    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// let client = Client::new("https://gitea.example.com",
     /// Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
     /// client.delete_repository("owner", "repo").await.unwrap();
     /// # }
-    pub async fn delete_repository(&self, owner: &str, repo: &str) -> Result<()> {
+    pub async fn delete_repository<A: ToString, B: ToString>(
+        &self,
+        owner: A,
+        repo: B,
+    ) -> Result<()> {
+        let owner = owner.to_string();
+        let repo = repo.to_string();
         let req = self.delete(format!("repos/{owner}/{repo}")).build()?;
         self.make_request(req).await?;
         Ok(())
@@ -670,17 +687,19 @@ impl Client {
     /// ```rust
     /// # use teatime::{Client, GetCommitsOption, Auth};
     /// # async fn get_commits() {
-    /// let client = Client::new("https://gitea.example.com".to_string(),
+    /// let client = Client::new("https://gitea.example.com",
     /// Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
     /// let get_option = GetCommitsOption::default();
     /// let commits = client.get_commits("owner", "repo", &get_option).await.unwrap();
     /// # }
-    pub async fn get_commits(
+    pub async fn get_commits<A: ToString, B: ToString>(
         &self,
-        owner: &str,
-        repo: &str,
+        owner: A,
+        repo: B,
         get_option: &GetCommitsOption,
     ) -> Result<Vec<Commit>> {
+        let owner = owner.to_string();
+        let repo = repo.to_string();
         let mut req = self.get(format!("repos/{owner}/{repo}/commits")).build()?;
         {
             let mut params = req.url_mut().query_pairs_mut();
@@ -708,11 +727,12 @@ impl Client {
         self.parse_response(res).await
     }
 
-    pub async fn create_access_token(
+    pub async fn create_access_token<A: ToString>(
         &self,
-        username: &str,
+        username: A,
         options: &CreateAccessTokenOption,
     ) -> Result<AccessToken> {
+        let username = username.to_string();
         let req = self
             .post(format!("users/{username}/tokens"))
             .json(options)
