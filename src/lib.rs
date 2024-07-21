@@ -741,6 +741,20 @@ impl Client {
         self.parse_response(res).await
     }
 
+    pub async fn delete_access_token<A: ToString, B: ToString>(
+        &self,
+        username: A,
+        token: B,
+    ) -> Result<()> {
+        let username = username.to_string();
+        let token = token.to_string();
+        let req = self
+            .delete(format!("users/{username}/tokens/{token}"))
+            .build()?;
+        self.make_request(req).await?;
+        Ok(())
+    }
+
     /// Creates a new DELETE-request builder with the given path.
     /// You may use this method to talk to the Gitea API directly if you need to.
     /// `path` will be prefixed with `{base_url}/api/v1/` before the request is sent.
