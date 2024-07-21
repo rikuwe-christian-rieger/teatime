@@ -236,7 +236,7 @@ pub struct AccessToken {
     /// Name of the access token.
     pub name: String,
     /// The token's scopes.
-    pub scopes: Vec<String>,
+    pub scopes: Option<Vec<String>>,
     /// The token's SHA1 hash. This is probably what you want to store to access the API.
     pub sha1: String,
     /// The token's last eight characters. Useful for verifying the token.
