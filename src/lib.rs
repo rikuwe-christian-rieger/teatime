@@ -805,7 +805,13 @@ impl Client {
     /// provided by the [Client] struct if they exist.
     /// You are responsible for providing the correct Model for the response.
     pub async fn parse_response<T: DeserializeOwned>(&self, res: reqwest::Response) -> Result<T> {
-        res.json::<T>().await.map_err(|e| e.into())
+        let status_code = res.status();
+        let text = res.text().await?;
+        serde_json::from_str(&text).map_err(|e| TeatimeError {
+            message: format!("Error parsing response: {}", e),
+            kind: error::TeatimeErrorKind::SerializationError,
+            status_code,
+        })
     }
 }
 
