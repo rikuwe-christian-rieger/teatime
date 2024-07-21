@@ -45,11 +45,11 @@ pub async fn test_teatime() {
         .with_mount(data)
         .with_env_var(
             "USER_UID",
-            env::var("USER_UID").unwrap_or("1000".to_string()),
+            env::var("UID").unwrap_or("1000".to_string()),
         )
         .with_env_var(
             "USER_GID",
-            env::var("USER_GID").unwrap_or("1000".to_string()),
+            env::var("GID").unwrap_or("1000".to_string()),
         )
         .start()
         .await
