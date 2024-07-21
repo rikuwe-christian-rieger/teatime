@@ -7,6 +7,7 @@ use reqwest::StatusCode;
 pub enum TeatimeErrorKind {
     HttpError,
     SerializationError,
+    Other,
 }
 
 impl Display for TeatimeErrorKind {
@@ -14,6 +15,7 @@ impl Display for TeatimeErrorKind {
         match self {
             TeatimeErrorKind::HttpError => write!(f, "HTTP error"),
             TeatimeErrorKind::SerializationError => write!(f, "Serialization error"),
+            TeatimeErrorKind::Other => write!(f, "error"),
         }
     }
 }
@@ -54,3 +56,13 @@ impl From<reqwest::Error> for TeatimeError {
     }
 }
 
+
+impl From<Box<dyn Error>> for TeatimeError {
+    fn from(err: Box<dyn Error>) -> Self {
+        TeatimeError {
+            message: format!("{}", err),
+            status_code: StatusCode::BAD_REQUEST,
+            kind: TeatimeErrorKind::Other,
+        }
+    }
+}

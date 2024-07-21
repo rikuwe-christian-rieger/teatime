@@ -10,9 +10,9 @@
 //! Once you have obtained a [Client], you can interact with the Gitea API by calling the various
 //! methods the instance provides. For example, to create a new repository, you can call:
 //! ```rust
-//! # use teatime::{Client, CreateRepoOption};
+//! # use teatime::{Client, CreateRepoOption, Auth};
 //! # async fn create_repo() {
-//! let client = Client::new("https://gitea.example.com".to_string(), "your-token".to_string());
+//! let client = Client::new("https://gitea.example.com".to_string(), Auth::Token("your-token"));
 //! let create_option = CreateRepoOption {
 //!     // `name` is the only required field
 //!     name: "my-new-repo".to_string(),
@@ -25,9 +25,9 @@
 //!
 //! Similarly, to get a list of commits for a repository, you can call:
 //! ```rust
-//! # use teatime::{Client, GetCommitsOption};
+//! # use teatime::{Client, GetCommitsOption, Auth};
 //! # async fn get_commits() {
-//! let client = Client::new("https://gitea.example.com".to_string(), "your-token".to_string());
+//! let client = Client::new("https://gitea.example.com".to_string(), Auth::Token("your-token"));
 //! let get_option = GetCommitsOption {
 //!     // `GetCommitsOption` has a number of optional fields to filter the results,
 //!     // but none are required. In this example, we're just setting the `limit` to 10 to
@@ -39,6 +39,25 @@
 //! # }
 //! ```
 //!
+//! If you want to create a new access token for a user, you can call:
+//! ```rust
+//! # use teatime::{Client, CreateAccessTokenOption, Auth};
+//! # async fn create_access_token() {
+//! let basic = Auth::Basic("username", "password");
+//! let client = Client::new("https://gitea.example.com".to_string(), basic);
+//! let create_option = CreateAccessTokenOption {
+//!    name: "my-new-token".to_string(),
+//!    ..Default::default()
+//! };
+//! let token = client.create_access_token("username", &create_option).await.unwrap();
+//! println!("Token {} created: {}", token.name, token.sha1);
+//! // You can now create a new client with the token and use it to interact with the API.
+//! let new_client = Client::new("https://gitea.example.com".to_string(), Auth::Token(token.sha1));
+//! # }
+//!
+//!
+use base64::engine::{GeneralPurpose, GeneralPurposeConfig};
+use base64::{alphabet, Engine};
 use error::{Result, TeatimeError};
 use std::fmt::Display;
 
@@ -199,6 +218,29 @@ pub struct GetCommitsOption {
     pub limit: Option<i64>,
     /// Commits that match the given specifier will not be listed.
     pub not: Option<String>,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct CreateAccessTokenOption {
+    /// Access token name.
+    pub name: String,
+    /// Optional scopes for the access token.
+    pub scopes: Option<Vec<String>>,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+/// Represents an access token.
+pub struct AccessToken {
+    /// ID of the access token.
+    pub id: i64,
+    /// Name of the access token.
+    pub name: String,
+    /// The token's scopes.
+    pub scopes: Vec<String>,
+    /// The token's SHA1 hash. This is probably what you want to store to access the API.
+    pub sha1: String,
+    /// The token's last eight characters. Useful for verifying the token.
+    pub token_last_eight: String,
 }
 
 /// Represents a Gitea user.
@@ -370,6 +412,13 @@ pub struct Commit {
     pub url: String,
 }
 
+/// Represents the authentication method to use with the Gitea API.
+pub enum Auth<D: ToString> {
+    Token(D),
+    Basic(D, D),
+    None,
+}
+
 /// Represents a Gitea client.
 /// This struct is the main way to interact with the Gitea API.
 /// It provides methods for creating repositories, getting repositories, deleting repositories,
@@ -384,11 +433,23 @@ impl Client {
     /// NOTE: The base URL MUST not include the `/api/v1` path and should not contain any trailing
     /// slashes. For example, `https://gitea.example.com` is a valid base URL, but
     /// `https://gitea.example.com/` or `https://gitea.example.com/api/v1` are not.
-    pub fn new(base_url: String, token: String) -> Self {
+    pub fn new<D: ToString>(base_url: String, auth: Auth<D>) -> Self {
         let mut headers = HeaderMap::new();
-        let token = HeaderValue::from_str(&format!("token {}", token)).expect("token error");
-
-        headers.insert(header::AUTHORIZATION, token);
+        match auth {
+            Auth::Token(token) => {
+                let token = HeaderValue::from_str(&format!("token {}", token.to_string()))
+                    .expect("token error");
+                headers.insert(header::AUTHORIZATION, token);
+            }
+            Auth::Basic(user, pass) => {
+                let engine = GeneralPurpose::new(&alphabet::STANDARD, GeneralPurposeConfig::new());
+                let base = engine.encode(format!("{}:{}", user.to_string(), pass.to_string()));
+                let basic =
+                    HeaderValue::from_str(&format!("Basic {base}")).expect("basic auth error");
+                headers.insert(header::AUTHORIZATION, basic);
+            }
+            Auth::None => {}
+        };
         headers.insert(header::ACCEPT, HeaderValue::from_static("application/json"));
 
         let cli = reqwest::ClientBuilder::new()
@@ -406,10 +467,10 @@ impl Client {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::Client;
+    /// # use teatime::{Client, Auth};
     /// # async fn get_authenticated_user() {
     /// let client = Client::new("https://gitea.example.com".to_string(),
-    /// "6adb63fdb8fcfa101207281cdf5e1d28b125e9ec".to_string());
+    /// Auth::Token("6adb63fdb8fcfa101207281cdf5e1d28b125e9ec"));
     /// let user = client.get_authenticated_user().await.unwrap();
     /// # }
     pub async fn get_authenticated_user(&self) -> Result<User> {
@@ -426,10 +487,10 @@ impl Client {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::Client;
+    /// # use teatime::{Client, Auth};
     /// # async fn get_user() {
     /// let client = Client::new("https://gitea.example.com".to_string(),
-    /// "5fda63fdbbfcfd131607881cda5e1d28a215e9e1".to_string());
+    /// Auth::Token("5fda63fdbbfcfd131607881cda5e1d28a215e9e1"));
     /// let user = client.get_user("username
     /// ").await.unwrap();
     /// # }
@@ -449,10 +510,10 @@ impl Client {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::{Client, CreateRepoOption};
+    /// # use teatime::{Client, CreateRepoOption, Auth};
     /// # async fn create_repo() {
     /// let client = Client::new("https://gitea.example.com".to_string(),
-    /// "5fda63fdbbfcfd131607881cda5e1d28a215e9e1".to_string());
+    /// Auth::Token("5fda63fdbbfcfd131607881cda5e1d28a215e9e1"));
     /// let create_option = CreateRepoOption {
     ///    // `name` is the only required field
     ///    name: "my-new-repo".to_string(),
@@ -477,10 +538,10 @@ impl Client {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::Client;
+    /// # use teatime::{Client, Auth};
     /// # async fn get_repo() {
     /// let client = Client::new("https://gitea.example.com".to_string(),
-    /// "793eae2c1dcd71daf9e6cc0f8a448a39b45d3ff3".to_string());
+    /// Auth::Token("793eae2c1dcd71daf9e6cc0f8a448a39b45d3ff3"));
     /// let repo = client.get_repository("owner", "repo").await.unwrap();
     /// # }
     /// ```
@@ -497,10 +558,10 @@ impl Client {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::{Client, SearchRepositoriesOption};
+    /// # use teatime::{Client, SearchRepositoriesOption, Auth};
     /// # async fn search_repos() {
     /// let client = Client::new("https://gitea.example.com".to_string(),
-    /// "e8ffd828994fc890156c56004e9f16eef224d8b0".to_string());
+    /// Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
     /// let search_option = SearchRepositoriesOption {
     ///    q: Some("my-repo".to_string()),
     ///    ..Default::default()
@@ -588,10 +649,10 @@ impl Client {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::Client;
+    /// # use teatime::{Client, Auth};
     /// # async fn delete_repo() {
     /// let client = Client::new("https://gitea.example.com".to_string(),
-    /// "e8ffd828994fc890156c56004e9f16eef224d8b0".to_string());
+    /// Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
     /// client.delete_repository("owner", "repo").await.unwrap();
     /// # }
     pub async fn delete_repository(&self, owner: &str, repo: &str) -> Result<()> {
@@ -607,10 +668,10 @@ impl Client {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::{Client, GetCommitsOption};
+    /// # use teatime::{Client, GetCommitsOption, Auth};
     /// # async fn get_commits() {
     /// let client = Client::new("https://gitea.example.com".to_string(),
-    /// "e8ffd828994fc890156c56004e9f16eef224d8b0".to_string());
+    /// Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
     /// let get_option = GetCommitsOption::default();
     /// let commits = client.get_commits("owner", "repo", &get_option).await.unwrap();
     /// # }
@@ -643,6 +704,19 @@ impl Client {
                 params.append_pair("not", not);
             }
         }
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
+    }
+
+    pub async fn create_access_token(
+        &self,
+        username: &str,
+        options: &CreateAccessTokenOption,
+    ) -> Result<AccessToken> {
+        let req = self
+            .post(format!("users/{username}/tokens"))
+            .json(options)
+            .build()?;
         let res = self.make_request(req).await?;
         self.parse_response(res).await
     }
