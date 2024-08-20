@@ -2,8 +2,7 @@ use std::{env, fs};
 
 use reqwest::Method;
 use teatime::{
-    error::Result, Auth, Client, CreateAccessTokenOption, CreateRepoOption, GetCommitsOption,
-    SearchRepositoriesOption,
+    error::Result, Auth, Client, CreateAccessTokenOption, CreateIssueOption, CreateRepoOption, GetCommitsOption, GetIssuesOption, SearchRepositoriesOption
 };
 use testcontainers::{
     core::{wait::HttpWaitStrategy, IntoContainerPort, Mount, WaitFor},
@@ -43,14 +42,8 @@ pub async fn test_teatime() {
         .with_exposed_port(3000.tcp())
         .with_wait_for(WaitFor::Http(wait_strategy))
         .with_mount(data)
-        .with_env_var(
-            "USER_UID",
-            env::var("UID").unwrap_or("1000".to_string()),
-        )
-        .with_env_var(
-            "USER_GID",
-            env::var("GID").unwrap_or("1000".to_string()),
-        )
+        .with_env_var("USER_UID", env::var("UID").unwrap_or("1000".to_string()))
+        .with_env_var("USER_GID", env::var("GID").unwrap_or("1000".to_string()))
         .start()
         .await
         .expect("Failed to start Gitea container");
@@ -117,6 +110,15 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_get_repo");
     test_get_repo(base_url, &token).await?;
 
+    println!("test_create_issue");
+    test_create_issue(base_url, &token).await?;
+
+    println!("test_get_issues");
+    test_get_issues(base_url, &token).await?;
+
+    println!("test_delete_issue");
+    test_delete_issue(base_url, &token).await?;
+
     println!("test_delete_repo");
     test_delete_repo(base_url, &token).await?;
 
@@ -142,6 +144,7 @@ pub async fn test_create_token(base_url: &str) -> Result<String> {
         scopes: Some(vec![
             "write:repository".into(),
             "write:user".into(),
+            "write:issue".into(),
             "write:organization".into(),
         ]),
     };
@@ -184,6 +187,34 @@ pub async fn test_get_repo(base_url: &str, token: &str) -> Result<()> {
     assert_eq!(repo.owner.login, GITEA_USER);
     assert_eq!(repo.name, GITEA_REPO);
     assert_eq!(repo.description, GITEA_REPO_DESCRIPTION);
+    Ok(())
+}
+
+pub async fn test_create_issue(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let options = CreateIssueOption {
+        title: "test issue".to_string(),
+        body: Some("test issue body".to_string()),
+        ..Default::default()
+    };
+    let issue = client
+        .create_issue(GITEA_USER, GITEA_REPO, &options)
+        .await?;
+    assert_eq!(issue.title, "test issue");
+    assert_eq!(issue.body, Some("test issue body".to_string()));
+    Ok(())
+}
+
+pub async fn test_get_issues(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let issues = client.get_issues(GITEA_USER, GITEA_REPO, &GetIssuesOption::default()).await?;
+    assert_eq!(issues.len(), 1);
+    Ok(())
+}
+
+pub async fn test_delete_issue(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    client.delete_issue(GITEA_USER, GITEA_REPO, 1).await?;
     Ok(())
 }
 
