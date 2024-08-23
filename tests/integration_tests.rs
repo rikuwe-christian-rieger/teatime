@@ -2,7 +2,8 @@ use std::{env, fs};
 
 use reqwest::Method;
 use teatime::{
-    error::Result, Auth, Client, CreateAccessTokenOption, CreateIssueOption, CreateRepoOption, GetCommitsOption, GetIssuesOption, SearchRepositoriesOption
+    error::Result, Auth, Client, CreateAccessTokenOption, CreateForkOption, CreateIssueOption,
+    CreateRepoOption, GetCommitsOption, GetIssuesOption, ListForksOption, SearchRepositoriesOption,
 };
 use testcontainers::{
     core::{wait::HttpWaitStrategy, IntoContainerPort, Mount, WaitFor},
@@ -110,6 +111,8 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_get_repo");
     test_get_repo(base_url, &token).await?;
 
+    // TODO: test forking - we need a second user for this
+
     println!("test_create_issue");
     test_create_issue(base_url, &token).await?;
 
@@ -207,7 +210,9 @@ pub async fn test_create_issue(base_url: &str, token: &str) -> Result<()> {
 
 pub async fn test_get_issues(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
-    let issues = client.get_issues(GITEA_USER, GITEA_REPO, &GetIssuesOption::default()).await?;
+    let issues = client
+        .get_issues(GITEA_USER, GITEA_REPO, &GetIssuesOption::default())
+        .await?;
     assert_eq!(issues.len(), 1);
     Ok(())
 }

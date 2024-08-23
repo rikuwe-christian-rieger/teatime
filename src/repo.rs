@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{default_true, Client, User, error::Result};
+use crate::{default_true, error::Result, Client, User};
 
 /// Represents the format of the object in the repository.
 /// Defaults to [ObjectFormatName::SHA1].
@@ -237,6 +237,31 @@ pub struct SearchRepositoriesOption {
     pub limit: Option<i32>,
 }
 
+/// Options for forking a repository.
+/// All fields are optional.
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct CreateForkOption {
+    /// The name of the new repository.
+    /// Will be the same as the original if not set.
+    pub name: Option<String>,
+    /// Organization name, if forking into an organization.
+    pub organization: Option<String>,
+}
+
+/// Options for listing a repository's forks.
+/// All fields are optional.
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ListForksOption {
+    /// Optional page number of the results to fetch (1-based).
+    /// Defaults to 1 if not set.
+    pub page: Option<i64>,
+    /// Optional number of forks to return per page (page-size).
+    /// Defaults to the maximum your instance allows if not set.
+    pub limit: Option<i64>,
+}
+
 /// Options for getting a list of commits from a repository.
 /// All fields are optional.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -443,6 +468,111 @@ impl Client {
         let req = self.delete(format!("repos/{owner}/{repo}")).build()?;
         self.make_request(req).await?;
         Ok(())
+    }
+
+    /// Forks a repository by its owner and name.
+    /// The [CreateForkOption] struct provides a number of optional fields to customize the fork,
+    /// but all fields are entirely optional.
+    /// If you don't set any fields, the fork will be created with the same name as the original
+    /// repository in the authenticated user's account.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use teatime::{Client, CreateForkOption, Auth};
+    /// # async fn fork_repo() {
+    /// let client = Client::new("https://gitea.example.com",
+    ///     Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
+    /// let fork_option = CreateForkOption {
+    ///     name: Some("my-fork".to_string()),
+    ///     ..Default::default()
+    /// };
+    /// let forked_repo = client.fork_repository("owner", "repo", &fork_option).await.unwrap();
+    /// # }
+    /// ```
+    /// This will fork the repository "owner/repo" into the authenticated user's account with the
+    /// name "my-fork".
+    ///
+    /// ```rust
+    /// # use teatime::{Client, CreateForkOption, Auth};
+    /// # async fn fork_repo() {
+    /// let client = Client::new("https://gitea.example.com",
+    ///     Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
+    /// let fork_option = CreateForkOption {
+    ///    organization: Some("my-org".to_string()),
+    ///    ..Default::default()
+    /// };
+    /// let forked_repo = client.fork_repository("owner", "repo", &fork_option).await.unwrap();
+    /// # }
+    /// ```
+    /// This will fork the repository "owner/repo" into the organization "my-org" with the same
+    /// name as the original repository.
+    ///
+    /// ```rust
+    /// # use teatime::{Client, CreateRepoOption, CreateForkOption, Auth};
+    /// # async fn fork_repo() {
+    /// let client = Client::new("https://gitea.example.com",
+    ///     Auth::Token("e8ffd828994fc890156c56004e9f16eef224d8b0"));
+    /// let create_option = CreateRepoOption {
+    ///     name: "my-new-repo".to_string(),
+    ///     ..Default::default()
+    /// };
+    /// let fork_option = CreateForkOption {
+    ///     name: Some("my-new-repo".to_string()),
+    ///     ..Default::default()
+    /// };
+    /// let created_repo = client.user_create_repository(&create_option).await.unwrap();
+    /// let forked_repo = client
+    ///     .fork_repository("owner", "repo", &fork_option)
+    ///     .await
+    ///     .expect_err("Repository with the same name should already exist for the current user");
+    /// # }
+    /// ```
+    /// This will create a new repository with the name "my-new-repo" for the authenticated user,
+    /// then attempt to fork the repository "owner/repo" into the authenticated user's account.
+    /// The fork will fail because a repository with the same name already exists.
+    pub async fn fork_repository<A: ToString, B: ToString>(
+        &self,
+        owner: A,
+        repo: B,
+        fork_option: &CreateForkOption,
+    ) -> Result<Repository> {
+        let owner = owner.to_string();
+        let repo = repo.to_string();
+        let req = self
+            .post(format!("repos/{owner}/{repo}/forks"))
+            .json(fork_option)
+            .build()?;
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
+    }
+
+    /// Lists the forks of a repository by its owner and name.
+    /// The [ListForksOption] struct provides a number of optional fields to filter the results,
+    /// but all fields are entirely optional.
+    /// If you don't set any fields, you will get the first page of forks.
+    ///
+    pub async fn get_forks<A: ToString, B: ToString>(
+        &self,
+        owner: A,
+        repo: B,
+        list_option: &ListForksOption,
+    ) -> Result<Vec<Repository>> {
+        let owner = owner.to_string();
+        let repo = repo.to_string();
+        let mut req = self.get(format!("repos/{owner}/{repo}/forks")).build()?;
+        {
+            let mut params = req.url_mut().query_pairs_mut();
+
+            if let Some(page) = &list_option.page {
+                params.append_pair("page", &page.to_string());
+            }
+            if let Some(limit) = &list_option.limit {
+                params.append_pair("limit", &limit.to_string());
+            }
+        }
+        let res = self.make_request(req).await?;
+        self.parse_response(res).await
     }
 
     /// Gets a list of commits for a repository.
