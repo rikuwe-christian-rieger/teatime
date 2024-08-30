@@ -83,12 +83,8 @@ impl ListForksBuilder {
     }
     /// Send the request to list the forks.
     pub async fn send(&self, client: &Client) -> Result<Vec<User>> {
-        let ListForksBuilder {
-            page,
-            limit,
-            owner,
-            repo,
-        } = self;
+        let owner = &self.owner;
+        let repo = &self.repo;
 
         let mut req = client.get(format!("repos/{owner}/{repo}/forks")).build()?;
         self.append_query_params(&mut req);

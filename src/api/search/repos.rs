@@ -10,11 +10,12 @@ use crate::error::Result;
 #[derive(Default, Debug, Clone, Serialize, Builder, QueryParams)]
 pub struct SearchRepositoriesBuilder {
     /// Keyword to search for
-    pub q: Option<String>,
+    #[query_params(rename = "q")]
+    pub query: Option<String>,
     /// Limit search to repositories with keyword as topic
     pub topic: Option<bool>,
     /// Include search of keyword within repository description
-    #[serde(rename = "include_desc")]
+    #[query_params(rename = "includeDesc")]
     pub include_desc: Option<bool>,
     /// Search only for repos that the user with the given id owns or contributes to
     pub uid: Option<i64>,
@@ -23,7 +24,7 @@ pub struct SearchRepositoriesBuilder {
     /// Search only for repos that belong to the given team id
     pub team_id: Option<i64>,
     /// Search only for repos that the user with the given id has starred
-    #[serde(rename = "starredBy")]
+    #[query_params(rename = "starredBy")]
     pub starred_by: Option<i64>,
     /// Include private repositories this user has access to (defaults to true)
     pub private: Option<bool>,

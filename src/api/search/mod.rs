@@ -18,7 +18,7 @@ impl Search {
     /// let repo = client
     ///     .search()
     ///     .repos()
-    ///     .q("my-repo".to_string())
+    ///     .query("my-repo".to_string())
     ///     .send(&client)
     ///     .await
     ///     .unwrap();

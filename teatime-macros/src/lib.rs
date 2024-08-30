@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parenthesized, LitStr};
+use syn::LitStr;
 
 #[proc_macro_derive(QueryParams, attributes(query_params))]
 pub fn derive_query_params(input: TokenStream) -> TokenStream {
