@@ -1729,8 +1729,18 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_urlencoded",
+ "teatime-macros",
  "testcontainers",
  "tokio",
+]
+
+[[package]]
+name = "teatime-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

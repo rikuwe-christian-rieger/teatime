@@ -1,27 +1,31 @@
 use build_it::Builder;
 use serde::Serialize;
+use teatime_macros::QueryParams;
 
 use crate::error::Result;
 use crate::model::issues::{Issue, IssueType, State};
 
-#[derive(Debug, Clone, Serialize, Builder)]
+#[derive(Debug, Clone, Serialize, Builder, QueryParams)]
 pub struct ListIssuesBuilder {
     #[skip]
     #[serde(skip)]
+    #[query_params(skip)]
     owner: String,
     #[skip]
     #[serde(skip)]
+    #[query_params(skip)]
     repo: String,
 
     /// Whether issue is open or closed
     pub state: Option<State>,
     /// Comma separated list of labels. Fetch only issues that have any of this labels. Non existent labels are discarded
+    #[query_params(skip)]
     pub labels: Option<Vec<String>>,
     /// Search string
-    #[serde(rename = "q")]
+    #[query_params(rename = "q")]
     pub query: Option<String>,
     /// Filter by type (Issues or Pulls) if set
-    #[serde(rename = "type")]
+    #[query_params(rename = "type")]
     pub issue_type: Option<IssueType>,
     /// Comma-separated list of milestone names or ids. It uses names and fall back to ids.
     /// Fetch only issues that have any of this milestones. Non existent milestones are discarded
@@ -66,44 +70,11 @@ impl ListIssuesBuilder {
         let owner = &self.owner;
         let repo = &self.repo;
         let mut req = client.get(format!("repos/{owner}/{repo}/issues")).build()?;
-        {
-            let mut params = req.url_mut().query_pairs_mut();
-            if let Some(state) = &self.state {
-                params.append_pair("state", &state.to_string());
-            }
-            if let Some(labels) = &self.labels {
-                params.append_pair("labels", &labels.join(","));
-            }
-            if let Some(query) = &self.query {
-                params.append_pair("q", query);
-            }
-            if let Some(issue_type) = &self.issue_type {
-                params.append_pair("type", &issue_type.to_string());
-            }
-            if let Some(milestone) = &self.milestone {
-                params.append_pair("milestone", milestone);
-            }
-            if let Some(since) = &self.since {
-                params.append_pair("since", since);
-            }
-            if let Some(before) = &self.before {
-                params.append_pair("before", before);
-            }
-            if let Some(created_by) = &self.created_by {
-                params.append_pair("created_by", created_by);
-            }
-            if let Some(assigned_by) = &self.assigned_by {
-                params.append_pair("assigned_by", assigned_by);
-            }
-            if let Some(mentioned_by) = &self.mentioned_by {
-                params.append_pair("mentioned_by", mentioned_by);
-            }
-            if let Some(page) = &self.page {
-                params.append_pair("page", &page.to_string());
-            }
-            if let Some(limit) = &self.limit {
-                params.append_pair("limit", &limit.to_string());
-            }
+        self.append_query_params(&mut req);
+        if let Some(labels) = &self.labels {
+            req.url_mut()
+                .query_pairs_mut()
+                .append_pair("value", &labels.join(","));
         }
         let res = client.make_request(req).await?;
         client.parse_response(res).await

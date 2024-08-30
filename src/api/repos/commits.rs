@@ -1,19 +1,22 @@
 use build_it::Builder;
 use serde::Serialize;
+use teatime_macros::QueryParams;
 
 use crate::{error::Result, model::repos::Commit};
 
 /// Options for getting a list of commits from a repository.
 /// All fields are optional.
-#[derive(Debug, Clone, Serialize, Builder)]
+#[derive(Debug, Clone, Serialize, Builder, QueryParams)]
 #[serde(default)]
 pub struct GetCommitsBuilder {
     #[skip]
     #[serde(skip)]
+    #[query_params(skip)]
     /// The owner of the repository to list commits for.
     owner: String,
     #[skip]
     #[serde(skip)]
+    #[query_params(skip)]
     /// The name of the repository to list commits for.
     repo: String,
 
@@ -71,34 +74,7 @@ impl GetCommitsBuilder {
         let mut req = client
             .get(format!("repos/{owner}/{repo}/commits"))
             .build()?;
-        {
-            let mut params = req.url_mut().query_pairs_mut();
-
-            if let Some(sha) = &self.sha {
-                params.append_pair("sha", sha);
-            }
-            if let Some(path) = &self.path {
-                params.append_pair("path", path);
-            }
-            if let Some(stat) = &self.stat {
-                params.append_pair("stat", &stat.to_string());
-            }
-            if let Some(verification) = &self.verification {
-                params.append_pair("verification", &verification.to_string());
-            }
-            if let Some(files) = &self.files {
-                params.append_pair("files", &files.to_string());
-            }
-            if let Some(page) = &self.page {
-                params.append_pair("page", &page.to_string());
-            }
-            if let Some(limit) = &self.limit {
-                params.append_pair("limit", &limit.to_string());
-            }
-            if let Some(not) = &self.not {
-                params.append_pair("not", not);
-            }
-        }
+        self.append_query_params(&mut req);
         let res = client.make_request(req).await?;
         client.parse_response(res).await
     }

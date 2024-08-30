@@ -1,12 +1,13 @@
 use build_it::Builder;
 use serde::{Deserialize, Serialize};
+use teatime_macros::QueryParams;
 
 use crate::model::repos::Repository;
 use crate::error::Result;
 
 /// Options for searching repositories.
 /// All fields are optional.
-#[derive(Default, Debug, Clone, Serialize, Builder)]
+#[derive(Default, Debug, Clone, Serialize, Builder, QueryParams)]
 pub struct SearchRepositoriesBuilder {
     /// Keyword to search for
     pub q: Option<String>,
@@ -52,61 +53,7 @@ impl SearchRepositoriesBuilder {
     }
     pub async fn send(&self, client: &crate::Client) -> Result<Vec<Repository>> {
         let mut req = client.get("repos/search".to_string()).build()?;
-        {
-            let mut params = req.url_mut().query_pairs_mut();
-
-            if let Some(q) = &self.q {
-                params.append_pair("q", q);
-            }
-            if let Some(topic) = &self.topic {
-                params.append_pair("topic", &topic.to_string());
-            }
-            if let Some(include_desc) = &self.include_desc {
-                params.append_pair("include_desc", &include_desc.to_string());
-            }
-            if let Some(uid) = &self.uid {
-                params.append_pair("uid", &uid.to_string());
-            }
-            if let Some(priority_owner_id) = &self.priority_owner_id {
-                params.append_pair("priority_owner_id", &priority_owner_id.to_string());
-            }
-            if let Some(team_id) = &self.team_id {
-                params.append_pair("team_id", &team_id.to_string());
-            }
-            if let Some(starred_by) = &self.starred_by {
-                params.append_pair("starredBy", &starred_by.to_string());
-            }
-            if let Some(private) = &self.private {
-                params.append_pair("private", &private.to_string());
-            }
-            if let Some(is_private) = &self.is_private {
-                params.append_pair("is_private", &is_private.to_string());
-            }
-            if let Some(template) = &self.template {
-                params.append_pair("template", &template.to_string());
-            }
-            if let Some(archived) = &self.archived {
-                params.append_pair("archived", &archived.to_string());
-            }
-            if let Some(mode) = &self.mode {
-                params.append_pair("mode", mode);
-            }
-            if let Some(exclusive) = &self.exclusive {
-                params.append_pair("exclusive", &exclusive.to_string());
-            }
-            if let Some(sort) = &self.sort {
-                params.append_pair("sort", sort);
-            }
-            if let Some(order) = &self.order {
-                params.append_pair("order", order);
-            }
-            if let Some(page) = &self.page {
-                params.append_pair("page", &page.to_string());
-            }
-            if let Some(limit) = &self.limit {
-                params.append_pair("limit", &limit.to_string());
-            }
-        }
+        self.append_query_params(&mut req);
         #[derive(Deserialize)]
         struct Response {
             #[allow(dead_code)]

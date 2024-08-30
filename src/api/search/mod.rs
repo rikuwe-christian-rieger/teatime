@@ -26,7 +26,7 @@ impl Search {
     /// ```
     /// This will search for repositories matching the keyword "my-repo".
     /// The search will include the repository description and will return the first page of
-    /// results.
+    /// result.
     pub fn repos(&self) -> repos::SearchRepositoriesBuilder {
         repos::SearchRepositoriesBuilder::new()
     }
