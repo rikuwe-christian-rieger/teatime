@@ -173,8 +173,8 @@ pub async fn test_get_user(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_create_repo(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let repo = client
-        .repos()
-        .create(GITEA_REPO)
+        .repos(GITEA_USER, GITEA_REPO)
+        .create()
         .description(GITEA_REPO_DESCRIPTION.to_string())
         .license("MIT".to_string())
         .auto_init(true)
@@ -189,8 +189,8 @@ pub async fn test_create_repo(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_get_repo(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let repo = client
-        .repos()
-        .get(GITEA_USER, GITEA_REPO)
+        .repos(GITEA_USER, GITEA_REPO)
+        .get()
         .send(&client)
         .await?;
     assert_eq!(repo.owner.login, GITEA_USER);
@@ -202,8 +202,8 @@ pub async fn test_get_repo(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_create_issue(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let issue = client
-        .issues()
-        .create(GITEA_USER, GITEA_REPO, "test issue")
+        .issues(GITEA_USER, GITEA_REPO)
+        .create("test issue")
         .body("test issue body".to_string())
         .send(&client)
         .await?;
@@ -215,8 +215,8 @@ pub async fn test_create_issue(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_get_issues(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let issues = client
-        .issues()
-        .list(GITEA_USER, GITEA_REPO)
+        .issues(GITEA_USER, GITEA_REPO)
+        .list()
         .send(&client)
         .await?;
     assert_eq!(issues.len(), 1);
@@ -226,8 +226,8 @@ pub async fn test_get_issues(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_delete_issue(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     client
-        .issues()
-        .delete(GITEA_USER, GITEA_REPO, 1)
+        .issues(GITEA_USER, GITEA_REPO)
+        .delete(1)
         .send(&client)
         .await?;
     Ok(())
@@ -236,8 +236,8 @@ pub async fn test_delete_issue(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_delete_repo(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     client
-        .repos()
-        .delete(GITEA_USER, GITEA_REPO)
+        .repos(GITEA_USER, GITEA_REPO)
+        .delete()
         .send(&client)
         .await?;
     Ok(())
@@ -246,8 +246,8 @@ pub async fn test_delete_repo(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_create_private_repo(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let repo = client
-        .repos()
-        .create(GITEA_REPO)
+        .repos(GITEA_USER, GITEA_REPO)
+        .create()
         .license("MIT".to_string())
         .description(GITEA_REPO_DESCRIPTION.to_string())
         .auto_init(true)
@@ -264,8 +264,8 @@ pub async fn test_create_private_repo(base_url: &str, token: &str) -> Result<()>
 pub async fn test_get_commits(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let commits = client
-        .repos()
-        .get_commits(GITEA_USER, GITEA_REPO)
+        .repos(GITEA_USER, GITEA_REPO)
+        .get_commits()
         .send(&client)
         .await?;
     assert_eq!(commits.len(), 1);
@@ -274,7 +274,7 @@ pub async fn test_get_commits(base_url: &str, token: &str) -> Result<()> {
 
 pub async fn test_search_repos(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
-    let repos = client.repos().search().send(&client).await?;
+    let repos = client.search().repos().send(&client).await?;
     assert_eq!(repos.len(), 1);
     Ok(())
 }

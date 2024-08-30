@@ -2,7 +2,10 @@ pub mod create;
 pub mod delete;
 pub mod list;
 
-pub struct Issues;
+pub struct Issues {
+    pub(crate) owner: String,
+    pub(crate) repo: String,
+}
 
 impl Issues {
     /// Create an issue.
@@ -20,21 +23,16 @@ impl Issues {
     ///     Auth::Token("your-token")
     /// );
     /// let issue = client
-    ///    .issues()
-    ///    .create("owner", "repo", "my-new-issue")
+    ///    .issues("owner", "repo")
+    ///    .create("my-new-issue")
     ///    .send(&client)
     ///    .await
     ///    .unwrap();
     /// # }
     /// ```
     /// This will create a new issue with the title "my-new-issue" in the repository "owner/repo".
-    pub fn create(
-        &self,
-        owner: impl ToString,
-        repo: impl ToString,
-        title: impl ToString,
-    ) -> create::CreateIssueBuilder {
-        create::CreateIssueBuilder::new(owner, repo, title)
+    pub fn create(&self, title: impl ToString) -> create::CreateIssueBuilder {
+        create::CreateIssueBuilder::new(&self.owner, &self.repo, title)
     }
     /// Delete an issue.
     /// This will delete the issue with the given issue number.
@@ -55,8 +53,8 @@ impl Issues {
     ///     Auth::Token("your-token")
     /// );
     /// client
-    ///    .issues()
-    ///    .delete("owner", "repo", 1)
+    ///    .issues("owner", "repo")
+    ///    .delete(1)
     ///    .send(&client)
     ///    .await
     ///    .unwrap();
@@ -65,11 +63,9 @@ impl Issues {
     /// This will delete the issue #1 in the repository "owner/repo".
     pub fn delete(
         &self,
-        owner: impl ToString,
-        repo: impl ToString,
         issue_number: i64,
     ) -> delete::DeleteIssueBuilder {
-        delete::DeleteIssueBuilder::new(owner, repo, issue_number)
+        delete::DeleteIssueBuilder::new(&self.owner, &self.repo, issue_number)
     }
 
     /// List a repository's issues.
@@ -88,8 +84,8 @@ impl Issues {
     ///     Auth::Token("your-token")
     /// );
     /// let issues = client
-    ///   .issues()
-    ///   .list("owner", "repo")
+    ///   .issues("owner", "repo")
+    ///   .list()
     ///   .state(State::Open)
     ///    .send(&client)
     ///   .await
@@ -97,7 +93,7 @@ impl Issues {
     /// # }
     /// ```
     /// This will get all open issues in the repository "owner/repo".
-    pub fn list(&self, owner: impl ToString, repo: impl ToString) -> list::ListIssuesBuilder {
-        list::ListIssuesBuilder::new(owner, repo)
+    pub fn list(&self) -> list::ListIssuesBuilder {
+        list::ListIssuesBuilder::new(&self.owner, &self.repo,)
     }
 }

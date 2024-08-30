@@ -3,10 +3,12 @@ pub mod create;
 pub mod delete;
 pub mod forks;
 pub mod get;
-pub mod search;
 
 /// The [Repos] struct provides methods for interacting with repositories.
-pub struct Repos;
+pub struct Repos {
+    pub(crate) owner: String,
+    pub(crate) repo: String,
+}
 
 impl Repos {
     /// Creates a new repository for the authenticated user.
@@ -22,16 +24,16 @@ impl Repos {
     ///     Auth::Token("your-token")
     /// );
     /// let repo = client
-    ///     .repos()
-    ///     .create("my-new-repo")
+    ///     .repos("owner", "my-new-repo")
+    ///     .create()
     ///     .send(&client)
     ///     .await
     ///     .unwrap();
     /// # }
     /// ```
     /// This will create a new repository with the name "my-new-repo" for the authenticated user.
-    pub fn create(&self, name: impl ToString) -> create::CreateRepoBuilder {
-        create::CreateRepoBuilder::new(name)
+    pub fn create(&self) -> create::CreateRepoBuilder {
+        create::CreateRepoBuilder::new(&self.repo)
     }
     /// Deletes a repository by its owner and name.
     /// WARNING: This is irreversible and will delete all data associated with the repository.
@@ -47,46 +49,15 @@ impl Repos {
     ///    Auth::Token("your-token")
     /// );
     /// client
-    ///    .repos()
-    ///    .delete("owner", "repo")
+    ///    .repos("owner", "repo")
+    ///    .delete()
     ///    .send(&client)
     ///    .await
     ///    .unwrap();
     /// # }
     /// ```
-    pub fn delete(
-        &self,
-        owner: impl ToString,
-        repo: impl ToString,
-    ) -> delete::DeleteRepoBuilder {
-        delete::DeleteRepoBuilder::new(owner, repo)
-    }
-    /// Searches for repositories based on the given search options.
-    /// All fields in the [SearchRepositoriesOption] are optional.
-    /// This method will return a list of repositories that match the search criteria.
-    ///
-    /// # Example
-    /// ```
-    /// # use teatime::{Client, Auth};
-    /// # async fn search_repos() {
-    /// let client = Client::new(
-    ///     "https://gitea.example.com",
-    ///     Auth::Token("your-token")
-    /// );
-    /// let repo = client
-    ///     .repos()
-    ///     .search()
-    ///     .q("my-repo".to_string())
-    ///     .send(&client)
-    ///     .await
-    ///     .unwrap();
-    /// # }
-    /// ```
-    /// This will search for repositories matching the keyword "my-repo".
-    /// The search will include the repository description and will return the first page of
-    /// results.
-    pub fn search(&self) -> search::SearchRepositoriesBuilder {
-        search::SearchRepositoriesBuilder::new()
+    pub fn delete(&self) -> delete::DeleteRepoBuilder {
+        delete::DeleteRepoBuilder::new(&self.owner, &self.repo)
     }
     /// Gets a repository by its owner and name.
     /// This will return a [Repository] object if the repository exists and is visible to the
@@ -101,16 +72,16 @@ impl Repos {
     ///     Auth::Token("your-token")
     /// );
     /// let repo = client
-    ///     .repos()
-    ///     .get("owner", "repo")
+    ///     .repos("owner", "repo")
+    ///     .get()
     ///     .send(&client)
     ///     .await
     ///     .unwrap();
     /// # }
     /// ```
     ///
-    pub fn get(&self, owner: impl ToString, repo: impl ToString) -> get::GetRepoBuilder {
-        get::GetRepoBuilder::new(owner, repo)
+    pub fn get(&self) -> get::GetRepoBuilder {
+        get::GetRepoBuilder::new(&self.owner, &self.repo)
     }
 
     /// Forks a repository by its owner and name.
@@ -129,8 +100,8 @@ impl Repos {
     ///     Auth::Token("your-token")
     /// );
     /// let forked_repo = client
-    ///     .repos()
-    ///     .create_fork("owner", "repo")
+    ///     .repos("owner", "repo")
+    ///     .create_fork()
     ///     .name("my-fork".to_string())
     ///     .send(&client)
     ///     .await
@@ -148,8 +119,8 @@ impl Repos {
     ///    Auth::Token("your-token")
     /// );
     /// let forked_repo = client
-    ///    .repos()
-    ///    .create_fork("owner", "repo")
+    ///    .repos("owner", "repo")
+    ///    .create_fork()
     ///    .organization("my-org".to_string())
     ///    .send(&client)
     ///    .await
@@ -167,14 +138,14 @@ impl Repos {
     ///    Auth::Token("your-token")
     /// );
     /// let created_repo = client
-    ///   .repos()
-    ///   .create("my-new-repo")
+    ///   .repos("owner", "my-new-repo")
+    ///   .create()
     ///   .send(&client)
     ///   .await
     ///   .unwrap();
     /// let forked_repo = client
-    ///    .repos()
-    ///    .create_fork("owner", "repo")
+    ///    .repos("owner", "my-new-repo")
+    ///    .create_fork()
     ///    .name("my-new-repo".to_string())
     ///    .send(&client)
     ///    .await
@@ -184,17 +155,13 @@ impl Repos {
     /// This will create a new repository with the name "my-new-repo" for the authenticated user,
     /// then attempt to fork the repository "owner/repo" into the authenticated user's account.
     /// The fork will fail because a repository with the same name already exists.
-    pub fn create_fork(
-        &self,
-        owner: impl ToString,
-        repo: impl ToString,
-    ) -> forks::CreateForkBuilder {
-        forks::CreateForkBuilder::new(owner, repo)
+    pub fn create_fork(&self) -> forks::CreateForkBuilder {
+        forks::CreateForkBuilder::new(&self.owner, &self.repo)
     }
 
     /// Lists the forks of a repository by its owner and name.
-    pub fn get_forks(&self, owner: impl ToString, repo: impl ToString) -> forks::ListForksBuilder {
-        forks::ListForksBuilder::new(owner, repo)
+    pub fn get_forks(&self) -> forks::ListForksBuilder {
+        forks::ListForksBuilder::new(&self.owner, &self.repo)
     }
 
     /// Gets a list of commits for a repository.
@@ -211,18 +178,14 @@ impl Repos {
     ///    Auth::Token("your-token")
     /// );
     /// let commits = client
-    ///   .repos()
-    ///   .get_commits("owner", "repo")
+    ///   .repos("owner", "repo")
+    ///   .get_commits()
     ///   .send(&client)
     ///   .await
     ///   .unwrap();
     /// # }
     /// ```
-    pub fn get_commits(
-        &self,
-        owner: impl ToString,
-        repo: impl ToString,
-    ) -> commits::GetCommitsBuilder {
-        commits::GetCommitsBuilder::new(owner, repo)
+    pub fn get_commits(&self) -> commits::GetCommitsBuilder {
+        commits::GetCommitsBuilder::new(&self.owner, &self.repo)
     }
 }

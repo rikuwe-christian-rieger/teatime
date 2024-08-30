@@ -1,7 +1,7 @@
 use crate::error::Result;
 use crate::model::user::User;
 
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct GetAuthenticatedUserBuilder;
 
 impl GetAuthenticatedUserBuilder {

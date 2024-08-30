@@ -98,6 +98,7 @@ pub struct Repository {
 }
 
 /// Represents information about a user in the context of a commit.
+///
 /// NOTE: This is not the same as the [User] struct.
 /// A CommitUser is not guaranteed to be a valid Gitea user.
 /// A commit author can set the name and email tracked in this struct to anything they want.

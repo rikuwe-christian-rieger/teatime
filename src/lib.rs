@@ -14,8 +14,8 @@
 //! # async fn create_repo() {
 //! let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
 //! let repo = client
-//!     .repos()
-//!     .create("my-new-repo")
+//!     .repos("owner", "my-new-repo")
+//!     .create()
 //!     // Optional fields
 //!     .description("This is my new repo".to_string())
 //!     .private(true)
@@ -32,8 +32,8 @@
 //! # async fn get_commits() {
 //! let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
 //! let commits = client
-//!    .repos()
-//!    .get_commits("owner", "repo-name")
+//!    .repos("owner", "repo-name")
+//!    .get_commits()
 //!    // Optional fields
 //!    .page(2)
 //!    .send(&client)
@@ -90,6 +90,7 @@ pub enum Auth<D: ToString> {
 }
 
 /// Represents a Gitea client.
+///
 /// This struct is the main way to interact with the Gitea API.
 /// It provides methods for creating repositories, getting repositories, deleting repositories,
 /// and listing a repo's commits.
@@ -138,12 +139,22 @@ impl Client {
         }
     }
 
-    pub fn repos(&self) -> api::repos::Repos {
-        api::repos::Repos
+    pub fn repos(&self, owner: impl ToString, repo: impl ToString) -> api::repos::Repos {
+        api::repos::Repos {
+            owner: owner.to_string(),
+            repo: repo.to_string(),
+        }
     }
 
-    pub fn issues(&self) -> api::issues::Issues {
-        api::issues::Issues
+    pub fn issues(&self, owner: impl ToString, repo: impl ToString) -> api::issues::Issues {
+        api::issues::Issues {
+            owner: owner.to_string(),
+            repo: repo.to_string(),
+        }
+    }
+
+    pub fn search(&self) -> api::search::Search {
+        api::search::Search
     }
 
     pub fn user(&self) -> api::user::User {
@@ -208,12 +219,4 @@ impl Client {
             status_code,
         })
     }
-}
-
-/// NOTE: This is a workaround for the janky `#[serde(default)]` attribute.
-/// It's not possible to use `#[serde(default = true)]`, so we have to create this
-/// helper function and use `#[serde(default = "default_true")]` instead.
-/// This is a known issue: #368 (https://github.com/serde-rs/serde/issues/368)
-pub const fn default_true() -> bool {
-    true
 }
