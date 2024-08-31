@@ -1,4 +1,5 @@
 pub mod repos;
+pub mod users;
 
 pub struct Search;
 
@@ -29,5 +30,29 @@ impl Search {
     /// result.
     pub fn repos(&self) -> repos::SearchRepositoriesBuilder {
         repos::SearchRepositoriesBuilder::new()
+    }
+
+    /// Searches for users based on the given search options.
+    /// This method will return a list of users that match the search criteria.
+    ///
+    /// # Example
+    /// ```
+    /// # use teatime::{Client, Auth};
+    /// # async fn search_users() {
+    /// let client = Client::new(
+    ///    "https://gitea.example.com",
+    ///    Auth::Token("your-token")
+    /// );
+    /// let users = client
+    ///    .search()
+    ///    .users()
+    ///    .query("my-user".to_string())
+    ///    .send(&client)
+    ///    .await
+    ///    .unwrap();
+    /// # }
+    /// ```
+    pub fn users(&self) -> users::SearchUsersBuilder {
+        users::SearchUsersBuilder::new()
     }
 }

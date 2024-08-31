@@ -130,6 +130,10 @@ pub async fn test(base_url: &str) -> Result<()> {
 
     println!("test_search_repos");
     test_search_repos(base_url, &token).await?;
+
+    println!("test_search_users");
+    test_search_users(base_url, &token).await?;
+
     Ok(())
 }
 
@@ -276,5 +280,17 @@ pub async fn test_search_repos(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let repos = client.search().repos().send(&client).await?;
     assert_eq!(repos.len(), 1);
+    Ok(())
+}
+
+pub async fn test_search_users(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let users = client
+        .search()
+        .users()
+        .query(GITEA_USER.to_string())
+        .send(&client)
+        .await?;
+    assert_eq!(users.len(), 1);
     Ok(())
 }
