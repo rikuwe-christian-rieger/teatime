@@ -116,6 +116,9 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_get_issues");
     test_get_issues(base_url, &token).await?;
 
+    println!("test_search_issues");
+    test_search_issues(base_url, &token).await?;
+
     println!("test_delete_issue");
     test_delete_issue(base_url, &token).await?;
 
@@ -221,6 +224,17 @@ pub async fn test_get_issues(base_url: &str, token: &str) -> Result<()> {
     let issues = client
         .issues(GITEA_USER, GITEA_REPO)
         .list()
+        .send(&client)
+        .await?;
+    assert_eq!(issues.len(), 1);
+    Ok(())
+}
+
+pub async fn test_search_issues(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let issues = client
+        .search()
+        .issues()
         .send(&client)
         .await?;
     assert_eq!(issues.len(), 1);

@@ -1,3 +1,4 @@
+pub mod issues;
 pub mod repos;
 pub mod users;
 
@@ -54,5 +55,30 @@ impl Search {
     /// ```
     pub fn users(&self) -> users::SearchUsersBuilder {
         users::SearchUsersBuilder::new()
+    }
+
+    /// Searches for issues based on the given search options.
+    /// This method will return a list of issues that match the search criteria.
+    ///
+    /// # Example
+    /// ```
+    /// # use teatime::{Client, Auth};
+    /// # async fn search_issues() {
+    /// let client = Client::new(
+    ///   "https://gitea.example.com",
+    ///   Auth::Token("your-token")
+    /// );
+    /// let issues = client
+    ///     .search()
+    ///     .issues()
+    ///     .query("my-issue".to_string())
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will search for issues matching the keyword "my-issue".
+    pub fn issues(&self) -> issues::SearchIssuesBuilder {
+        issues::SearchIssuesBuilder::new()
     }
 }
