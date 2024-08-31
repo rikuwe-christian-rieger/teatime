@@ -8,14 +8,15 @@
 //! token. Teatime does currently not support basic HTML or OAuth2 authentication.
 //!
 //! Once you have obtained a [Client], you can interact with the Gitea API by calling the various
-//! methods the instance provides. For example, to create a new repository, you can call:
+//! methods the instance provides. For example, to create a new repository for the currently
+//! authenticated user, you can call:
 //! ```
 //! # use teatime::{Client, Auth};
 //! # async fn create_repo() {
 //! let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
 //! let repo = client
-//!     .repos("owner", "my-new-repo")
-//!     .create()
+//!     .user()
+//!     .create_repo("my-new-repo")
 //!     // Optional fields
 //!     .description("This is my new repo".to_string())
 //!     .private(true)

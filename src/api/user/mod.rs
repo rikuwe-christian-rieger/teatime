@@ -1,3 +1,4 @@
+pub mod create_repo;
 pub mod current;
 pub mod get;
 pub mod tokens;
@@ -55,6 +56,30 @@ impl User {
     ///
     pub fn get(&self, username: impl ToString) -> get::GetUserBuilder {
         get::GetUserBuilder::new(username)
+    }
+
+    /// Creates a new repository for the authenticated user.
+    ///
+    /// # Example
+    /// ```
+    /// # use teatime::{Client, Auth};
+    /// # async fn create_repo() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let repo = client
+    ///     .user()
+    ///     .create_repo("my-new-repo")
+    ///     .private(true)
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will create a new private repository with the name "my-new-repo" for the authenticated user.
+    pub fn create_repo(&self, name: impl ToString) -> create_repo::CreateRepoBuilder {
+        create_repo::CreateRepoBuilder::new(name)
     }
 
     /// Creates a new access token for a user.

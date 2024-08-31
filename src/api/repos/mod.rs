@@ -1,5 +1,4 @@
 pub mod commits;
-pub mod create;
 pub mod delete;
 pub mod forks;
 pub mod get;
@@ -11,30 +10,6 @@ pub struct Repos {
 }
 
 impl Repos {
-    /// Creates a new repository for the authenticated user.
-    /// The only required field in the [CreateRepoOption] is `name`.
-    /// All other fields are optional.
-    ///
-    /// # Example
-    /// ```
-    /// # use teatime::{Client, Auth};
-    /// # async fn create_repo() {
-    /// let client = Client::new(
-    ///     "https://gitea.example.com",
-    ///     Auth::Token("your-token")
-    /// );
-    /// let repo = client
-    ///     .repos("owner", "my-new-repo")
-    ///     .create()
-    ///     .send(&client)
-    ///     .await
-    ///     .unwrap();
-    /// # }
-    /// ```
-    /// This will create a new repository with the name "my-new-repo" for the authenticated user.
-    pub fn create(&self) -> create::CreateRepoBuilder {
-        create::CreateRepoBuilder::new(&self.repo)
-    }
     /// Deletes a repository by its owner and name.
     /// WARNING: This is irreversible and will delete all data associated with the repository.
     /// This action cannot be undone. When invoking this method, you will not be asked for
@@ -138,8 +113,8 @@ impl Repos {
     ///    Auth::Token("your-token")
     /// );
     /// let created_repo = client
-    ///   .repos("owner", "my-new-repo")
-    ///   .create()
+    ///   .user()
+    ///   .create_repo("my-new-repo")
     ///   .send(&client)
     ///   .await
     ///   .unwrap();

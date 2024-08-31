@@ -173,8 +173,8 @@ pub async fn test_get_user(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_create_repo(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let repo = client
-        .repos(GITEA_USER, GITEA_REPO)
-        .create()
+        .user()
+        .create_repo(GITEA_REPO)
         .description(GITEA_REPO_DESCRIPTION.to_string())
         .license("MIT".to_string())
         .auto_init(true)
@@ -246,8 +246,8 @@ pub async fn test_delete_repo(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_create_private_repo(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let repo = client
-        .repos(GITEA_USER, GITEA_REPO)
-        .create()
+        .user()
+        .create_repo(GITEA_REPO)
         .license("MIT".to_string())
         .description(GITEA_REPO_DESCRIPTION.to_string())
         .auto_init(true)
