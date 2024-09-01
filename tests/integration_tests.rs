@@ -113,8 +113,11 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_create_issue");
     test_create_issue(base_url, &token).await?;
 
-    println!("test_get_issues");
-    test_get_issues(base_url, &token).await?;
+    println!("test_list_issues");
+    test_list_issues(base_url, &token).await?;
+
+    println!("test_get_issue");
+    test_get_issue(base_url, &token).await?;
 
     println!("test_search_issues");
     test_search_issues(base_url, &token).await?;
@@ -219,7 +222,7 @@ pub async fn test_create_issue(base_url: &str, token: &str) -> Result<()> {
     Ok(())
 }
 
-pub async fn test_get_issues(base_url: &str, token: &str) -> Result<()> {
+pub async fn test_list_issues(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let issues = client
         .issues(GITEA_USER, GITEA_REPO)
@@ -230,13 +233,20 @@ pub async fn test_get_issues(base_url: &str, token: &str) -> Result<()> {
     Ok(())
 }
 
-pub async fn test_search_issues(base_url: &str, token: &str) -> Result<()> {
+pub async fn test_get_issue(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
-    let issues = client
-        .search()
-        .issues()
+    let issue = client
+        .issues(GITEA_USER, GITEA_REPO)
+        .get(1)
         .send(&client)
         .await?;
+    assert_eq!(issue.title, "test issue");
+    Ok(())
+}
+
+pub async fn test_search_issues(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let issues = client.search().issues().send(&client).await?;
     assert_eq!(issues.len(), 1);
     Ok(())
 }

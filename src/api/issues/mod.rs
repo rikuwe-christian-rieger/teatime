@@ -1,5 +1,6 @@
 pub mod create;
 pub mod delete;
+pub mod get;
 pub mod list;
 
 pub struct Issues {
@@ -61,11 +62,32 @@ impl Issues {
     /// # }
     /// ```
     /// This will delete the issue #1 in the repository "owner/repo".
-    pub fn delete(
-        &self,
-        issue_number: i64,
-    ) -> delete::DeleteIssueBuilder {
+    pub fn delete(&self, issue_number: i64) -> delete::DeleteIssueBuilder {
         delete::DeleteIssueBuilder::new(&self.owner, &self.repo, issue_number)
+    }
+
+    /// Get an issue.
+    /// This will return the issue with the given issue number.
+    ///
+    /// # Example
+    /// ```rust
+    /// # use teatime::{Client, Auth};
+    /// # async fn get_issue() {
+    /// let client = Client::new(
+    ///    "https://gitea.example.com",
+    ///    Auth::Token("your-token")
+    /// );
+    /// let issue = client
+    ///     .issues("owner", "repo")
+    ///     .get(1)
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will get the issue #1 in the repository "owner/repo".
+    pub fn get(&self, issue_number: i64) -> get::GetIssueBuilder {
+        get::GetIssueBuilder::new(&self.owner, &self.repo, issue_number)
     }
 
     /// List a repository's issues.
@@ -94,6 +116,6 @@ impl Issues {
     /// ```
     /// This will get all open issues in the repository "owner/repo".
     pub fn list(&self) -> list::ListIssuesBuilder {
-        list::ListIssuesBuilder::new(&self.owner, &self.repo,)
+        list::ListIssuesBuilder::new(&self.owner, &self.repo)
     }
 }
