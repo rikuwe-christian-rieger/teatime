@@ -2,7 +2,7 @@ use build_it::Builder;
 use serde::Serialize;
 use teatime_macros::QueryParams;
 
-use crate::{error::Result, model::user::User, Client};
+use crate::{error::Result, model::repos::Repository, Client};
 
 /// Options for forking a repository.
 /// All fields are optional.
@@ -35,7 +35,7 @@ impl CreateForkBuilder {
         }
     }
     /// Send the request to fork the repository.
-    pub async fn send(&self, client: &Client) -> Result<User> {
+    pub async fn send(&self, client: &Client) -> Result<Repository> {
         let owner = &self.owner;
         let repo = &self.repo;
         let req = client
@@ -82,7 +82,7 @@ impl ListForksBuilder {
         }
     }
     /// Send the request to list the forks.
-    pub async fn send(&self, client: &Client) -> Result<Vec<User>> {
+    pub async fn send(&self, client: &Client) -> Result<Vec<Repository>> {
         let owner = &self.owner;
         let repo = &self.repo;
 
