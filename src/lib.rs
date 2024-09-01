@@ -147,6 +147,42 @@ impl Client {
         }
     }
 
+    /// Migrates a repository from another service to Gitea.
+    ///
+    /// This will create a new repository in Gitea with the same name as the repository in the
+    /// source service and copy all the data from the source repository to the new repository.
+    /// The source repository will not be modified.
+    ///
+    /// Gitea supports pull-mirrors, which will keep the new repository in sync with the source
+    /// repository. This is useful if you want to keep the new repository up-to-date with the
+    /// source repository.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use teatime::{Client, Auth};
+    /// # async fn migrate_repo() {
+    /// let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
+    /// let repo = client
+    ///     .migrate_repo("https://example.git.com/owner/repo", "repo")
+    ///     .mirror(true)
+    ///     .mirror_interval("1h".to_string())
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will create a new repository in Gitea with the name `repo` and copy all the data from
+    /// the repository at `https://example.git.com/owner/repo` to the new repository. The new
+    /// repository will be kept in sync with the source repository every hour.
+    pub fn migrate_repo(
+        &self,
+        clone_addr: impl ToString,
+        repo_name: impl ToString,
+    ) -> api::migrate::MigrateRepoBuilder {
+        api::migrate::MigrateRepoBuilder::new(clone_addr, repo_name)
+    }
+
     pub fn issues(&self, owner: impl ToString, repo: impl ToString) -> api::issues::Issues {
         api::issues::Issues {
             owner: owner.to_string(),

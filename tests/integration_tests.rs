@@ -91,6 +91,7 @@ pub async fn test(base_url: &str) -> Result<()> {
     test_edit_repo(base_url, &token).await?;
 
     // TODO: test forking - we need a second user for this
+    // TODO: test migrating - we need a second repo for this
 
     println!("test_create_issue");
     test_create_issue(base_url, &token).await?;
