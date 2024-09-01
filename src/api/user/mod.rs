@@ -1,6 +1,7 @@
 pub mod create_repo;
 pub mod current;
 pub mod get;
+pub mod list_repos;
 pub mod tokens;
 
 pub struct User;
@@ -80,6 +81,32 @@ impl User {
     /// This will create a new private repository with the name "my-new-repo" for the authenticated user.
     pub fn create_repo(&self, name: impl ToString) -> create_repo::CreateRepoBuilder {
         create_repo::CreateRepoBuilder::new(name)
+    }
+
+    /// Lists all repositories for the authenticated user.
+    /// This will return a list of all [Repository](crate::model::repos::Repository) objects
+    /// owned by the authenticated user.
+    ///
+    /// # Example
+    /// ```
+    /// # use teatime::{Client, Auth};
+    /// # async fn list_repos() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let repos = client
+    ///     .user()
+    ///     .list_repos()
+    ///     .limit(10)
+    ///     .page(2)
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn list_repos(&self) -> list_repos::ListReposBuilder {
+        list_repos::ListReposBuilder::new()
     }
 
     /// Creates a new access token for a user.
