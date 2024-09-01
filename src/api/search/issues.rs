@@ -1,5 +1,5 @@
 use build_it::Builder;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use teatime_macros::QueryParams;
 
 use crate::error::Result;

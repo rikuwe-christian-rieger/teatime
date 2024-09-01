@@ -1,4 +1,4 @@
-use std::{env, fs};
+use std::env;
 
 use reqwest::Method;
 use teatime::{error::Result, Auth, Client};
@@ -97,6 +97,9 @@ pub async fn test(base_url: &str) -> Result<()> {
 
     println!("test_search_issues");
     test_search_issues(base_url, &token).await?;
+
+    println!("test_edit_issue");
+    test_edit_issue(base_url, &token).await?;
 
     println!("test_delete_issue");
     test_delete_issue(base_url, &token).await?;
@@ -217,6 +220,19 @@ pub async fn test_get_issue(base_url: &str, token: &str) -> Result<()> {
         .send(&client)
         .await?;
     assert_eq!(issue.title, "test issue");
+    Ok(())
+}
+
+pub async fn test_edit_issue(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let issue = client
+        .issues(GITEA_USER, GITEA_REPO)
+        .edit(1)
+        .title("my new title".to_string())
+        .unset_due_date(true)
+        .send(&client)
+        .await?;
+    assert_eq!(issue.title, "my new title");
     Ok(())
 }
 

@@ -1,5 +1,6 @@
 pub mod create;
 pub mod delete;
+pub mod edit;
 pub mod get;
 pub mod list;
 
@@ -88,6 +89,29 @@ impl Issues {
     /// This will get the issue #1 in the repository "owner/repo".
     pub fn get(&self, issue_number: i64) -> get::GetIssueBuilder {
         get::GetIssueBuilder::new(&self.owner, &self.repo, issue_number)
+    }
+
+    /// Edit an issue.
+    ///
+    /// # Example
+    /// ```rust
+    /// # use teatime::{Client, Auth};
+    /// # async fn edit_issue() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .issues("owner", "repo")
+    ///     .edit(1)
+    ///     .title("new-title".to_string())
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn edit(&self, issue_number: i64) -> edit::EditIssueBuilder {
+        edit::EditIssueBuilder::new(&self.owner, &self.repo, issue_number)
     }
 
     /// List a repository's issues.

@@ -168,6 +168,12 @@ impl Client {
     pub fn delete(&self, path: impl Display) -> reqwest::RequestBuilder {
         self.request_base(Method::DELETE, path)
     }
+    /// Creates a new PATCH-request builder with the given path.
+    /// You may use this method to talk to the Gitea API directly if you need to.
+    /// `path` will be prefixed with `{base_url}/api/v1/` before the request is sent.
+    pub fn patch(&self, path: impl Display) -> reqwest::RequestBuilder {
+        self.request_base(Method::PATCH, path)
+    }
     /// Creates a new POST-request builder with the given path.
     /// You may use this method to talk to the Gitea API directly if you need to.
     /// `path` will be prefixed with `{base_url}/api/v1/` before the request is sent.
