@@ -1,5 +1,6 @@
 pub mod commits;
 pub mod delete;
+pub mod edit;
 pub mod forks;
 pub mod get;
 
@@ -132,6 +133,33 @@ impl Repos {
     /// The fork will fail because a repository with the same name already exists.
     pub fn create_fork(&self) -> forks::CreateForkBuilder {
         forks::CreateForkBuilder::new(&self.owner, &self.repo)
+    }
+
+    /// Edits a repository by its owner and name.
+    ///
+    /// If you don't set any fields, the repository will not be modified.
+    ///
+    /// # Example
+    /// ```rust
+    /// # use teatime::{Client, Auth};
+    /// # async fn edit_repo() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///      Auth::Token("your-token")
+    /// );
+    /// let repo = client
+    ///     .repos("owner", "repo")
+    ///     .edit()
+    ///     .description("A new description".to_string())
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will set the description of the repository "owner/repo" to "A new description".
+    /// If you want to remove the description, you can set it to an empty string.
+    pub fn edit(&self) -> edit::EditRepoBuilder {
+        edit::EditRepoBuilder::new(&self.owner, &self.repo)
     }
 
     /// Lists the forks of a repository by its owner and name.

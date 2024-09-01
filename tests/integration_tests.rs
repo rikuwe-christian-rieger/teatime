@@ -84,6 +84,9 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_get_repo");
     test_get_repo(base_url, &token).await?;
 
+    println!("test_edit_repo");
+    test_edit_repo(base_url, &token).await?;
+
     // TODO: test forking - we need a second user for this
 
     println!("test_create_issue");
@@ -187,6 +190,20 @@ pub async fn test_get_repo(base_url: &str, token: &str) -> Result<()> {
     assert_eq!(repo.description, GITEA_REPO_DESCRIPTION);
     Ok(())
 }
+
+pub async fn test_edit_repo(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let repo = client
+        .repos(GITEA_USER, GITEA_REPO)
+        .edit()
+        .send(&client)
+        .await?;
+    assert_eq!(repo.owner.login, GITEA_USER);
+    assert_eq!(repo.name, GITEA_REPO);
+    assert_eq!(repo.description, GITEA_REPO_DESCRIPTION);
+    Ok(())
+}
+
 
 pub async fn test_create_issue(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
