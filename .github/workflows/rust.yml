@@ -18,6 +18,10 @@ jobs:
     - uses: actions/checkout@v4
     - name: Run sccache
       uses: mozilla-actions/sccache-action@v0.0.5
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: Build docker test image
+      run: docker build -t teatime/test-image test-image
     - name: Build
       run: cargo build --verbose
     - name: Run tests

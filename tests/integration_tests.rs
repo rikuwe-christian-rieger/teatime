@@ -3,7 +3,7 @@ use std::{env, fs};
 use reqwest::Method;
 use teatime::{error::Result, Auth, Client};
 use testcontainers::{
-    core::{wait::HttpWaitStrategy, IntoContainerPort, Mount, WaitFor},
+    core::{wait::HttpWaitStrategy, IntoContainerPort, WaitFor},
     runners::AsyncRunner,
     GenericImage, ImageExt,
 };
@@ -24,22 +24,9 @@ pub async fn test_teatime() {
         .with_method(Method::GET)
         .with_response_matcher(move |response| response.status().is_success());
 
-    let data = Mount::bind_mount(
-        format!(
-            "{}/gitea",
-            std::env::current_dir().unwrap().to_str().unwrap()
-        ),
-        "/data",
-    );
-
-    fs::create_dir_all("gitea/gitea/conf").expect("Failed to create gitea directory");
-    fs::copy("test-data/gitea.db", "gitea/gitea/gitea.db").expect("Failed to copy gitea.db");
-    fs::copy("test-data/app.ini", "gitea/gitea/conf/app.ini").expect("Failed to copy app.ini");
-
-    let container = GenericImage::new("gitea/gitea", "latest")
+    let container = GenericImage::new("teatime/test-image", "latest")
         .with_exposed_port(3000.tcp())
         .with_wait_for(WaitFor::Http(wait_strategy))
-        .with_mount(data)
         .with_env_var("USER_UID", env::var("UID").unwrap_or("1000".to_string()))
         .with_env_var("USER_GID", env::var("GID").unwrap_or("1000".to_string()))
         .start()
@@ -67,9 +54,6 @@ pub async fn test_teatime() {
         .await
         .expect("Failed to stop Gitea container");
 
-    let remove_gitea = fs::remove_dir_all("gitea/gitea");
-    let remove_git = fs::remove_dir_all("gitea/git");
-
     let mut panic = false;
     if let Err(e) = result {
         eprintln!("Failed to run tests: {}", e);
@@ -77,14 +61,6 @@ pub async fn test_teatime() {
     }
     if let Err(e) = delete {
         eprintln!("Failed to delete token: {}", e);
-        panic = true;
-    }
-    if let Err(e) = remove_git {
-        eprintln!("Failed to remove gitea/git directory: {}", e);
-        panic = true;
-    }
-    if let Err(e) = remove_gitea {
-        eprintln!("Failed to remove gitea/gitea directory: {}", e);
         panic = true;
     }
     if panic {
