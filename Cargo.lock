@@ -486,6 +486,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40ecd4077b5ae9fd2e9e169b102c6c330d0605168eb0e8bf79952b256dbefffd"
 
 [[package]]
+name = "gitea-sdk"
+version = "0.2.0"
+dependencies = [
+ "base64 0.22.1",
+ "build-it",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "teatime-macros",
+ "testcontainers",
+ "tokio",
+]
+
+[[package]]
 name = "h2"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1717,21 +1732,6 @@ checksum = "a75fb188eb626b924683e3b95e3a48e63551fcfb51949de2f06a9d91dbee93c9"
 dependencies = [
  "core-foundation-sys",
  "libc",
-]
-
-[[package]]
-name = "teatime"
-version = "0.2.0"
-dependencies = [
- "base64 0.22.1",
- "build-it",
- "reqwest",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "teatime-macros",
- "testcontainers",
- "tokio",
 ]
 
 [[package]]

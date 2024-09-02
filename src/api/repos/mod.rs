@@ -18,7 +18,7 @@ impl Repos {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn delete_repo() {
     /// let client = Client::new(
     ///    "https://gitea.example.com",
@@ -41,7 +41,7 @@ impl Repos {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn get_repo() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -69,7 +69,7 @@ impl Repos {
     /// # Examples
     ///
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn fork_repo() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -88,7 +88,7 @@ impl Repos {
     /// name "my-fork".
     ///
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn fork_repo() {
     /// let client = Client::new(
     ///    "https://gitea.example.com",
@@ -107,7 +107,7 @@ impl Repos {
     /// name as the original repository.
     ///
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn fork_repo() {
     /// let client = Client::new(
     ///    "https://gitea.example.com",
@@ -141,7 +141,7 @@ impl Repos {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn edit_repo() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -174,7 +174,7 @@ impl Repos {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, api::repos::commits::GetCommitsBuilder, Auth};
+    /// # use gitea_sdk::{Client, api::repos::commits::GetCommitsBuilder, Auth};
     /// # async fn get_commits() {
     /// let client = Client::new(
     ///    "https://gitea.example.com",

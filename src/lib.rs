@@ -5,13 +5,13 @@
 //! # Usage
 //! The main way to interact with the Gitea API is through the `Client` struct. You can create a
 //! new [Client] by calling [Client::new] with the base URL of your Gitea instance and a personal
-//! token. Teatime does currently not support basic HTML or OAuth2 authentication.
+//! token. The crate does currently not support basic HTML or OAuth2 authentication.
 //!
 //! Once you have obtained a [Client], you can interact with the Gitea API by calling the various
 //! methods the instance provides. For example, to create a new repository for the currently
 //! authenticated user, you can call:
 //! ```
-//! # use teatime::{Client, Auth};
+//! # use gitea_sdk::{Client, Auth};
 //! # async fn create_repo() {
 //! let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
 //! let repo = client
@@ -29,7 +29,7 @@
 //!
 //! Similarly, to get a list of commits for a repository, you can call:
 //! ```
-//! # use teatime::{Client, Auth};
+//! # use gitea_sdk::{Client, Auth};
 //! # async fn get_commits() {
 //! let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
 //! let commits = client
@@ -45,7 +45,7 @@
 //!
 //! If you want to create a new access token for a user, you can call:
 //! ```
-//! # use teatime::{Client, CreateAccessTokenOption, Auth};
+//! # use gitea_sdk::{Client, CreateAccessTokenOption, Auth};
 //! # async fn create_access_token() {
 //! let basic = Auth::Basic("username", "password");
 //! let client = Client::new("https://gitea.example.com", basic);
@@ -160,7 +160,7 @@ impl Client {
     /// # Example
     ///
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn migrate_repo() {
     /// let client = Client::new("https://gitea.example.com", Auth::Token("your-token"));
     /// let repo = client

@@ -13,7 +13,7 @@ impl User {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn get_authenticated_user() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -38,7 +38,7 @@ impl User {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn get_user() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -63,7 +63,7 @@ impl User {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn create_repo() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -89,7 +89,7 @@ impl User {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn list_repos() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -114,7 +114,7 @@ impl User {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, CreateAccessTokenOption, Auth};
+    /// # use gitea_sdk::{Client, CreateAccessTokenOption, Auth};
     /// # async fn create_token() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -155,7 +155,7 @@ impl User {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn delete_token() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",

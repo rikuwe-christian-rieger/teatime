@@ -1,9 +1,9 @@
 [package]
-name = "teatime"
+name = "gitea-sdk"
 version = "0.2.0"
 edition = "2021"
 license = "MIT"
-description = "Gitea API client"
+description = "An unofficial Gitea API client"
 repository = "https://github.com/benpueschel/teatime"
 readme = "README.md"
 authors = ["Ben Püschel"]

@@ -1,5 +1,8 @@
 # teatime
 
+NOTE: The crate name is now `gitea-sdk` because `teatime` was already taken on crates.io and I
+forgot to check for that (oops).
+
 Teatime is a simple Gitea API client for Rust. It's goal is to give you the ability to write
 exactly as much code as you need to interact with the specific parts of the Gitea API you need,
 but no more.
@@ -17,14 +20,14 @@ commits of the repository `username/awesome-repo`:
 let client = Client::new("https://gitea.example.com".to_string(), "your-token".to_string());
 // This will create a new repository with the name "my-new-repo" for the authenticated user.
 let repo = client
-    .repos()
-    .create("my-new-repo")
+    .user()
+    .create_repo("my-new-repo")
     .send(&client)
     .await?;
 
 let commits = client
-    .repos()
-    .get_commits("username", "awesome-repo")
+    .repos("username", "awesome-repo")
+    .get_commits()
     .limit(10)
     .send(&client)
     .await

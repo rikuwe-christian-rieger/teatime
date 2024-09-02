@@ -18,7 +18,7 @@ impl Issues {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn create_issue() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -48,7 +48,7 @@ impl Issues {
     /// # Example
     ///
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn delete_issue() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -72,7 +72,7 @@ impl Issues {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn get_issue() {
     /// let client = Client::new(
     ///    "https://gitea.example.com",
@@ -95,7 +95,7 @@ impl Issues {
     ///
     /// # Example
     /// ```rust
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn edit_issue() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -123,7 +123,7 @@ impl Issues {
     /// # Example
     ///
     /// ```rust
-    /// # use teatime::{Client, Auth, model::issues::State};
+    /// # use gitea_sdk::{Client, Auth, model::issues::State};
     /// # async fn get_issues() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",

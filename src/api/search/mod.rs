@@ -11,7 +11,7 @@ impl Search {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn search_repos() {
     /// let client = Client::new(
     ///     "https://gitea.example.com",
@@ -38,7 +38,7 @@ impl Search {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn search_users() {
     /// let client = Client::new(
     ///    "https://gitea.example.com",
@@ -62,7 +62,7 @@ impl Search {
     ///
     /// # Example
     /// ```
-    /// # use teatime::{Client, Auth};
+    /// # use gitea_sdk::{Client, Auth};
     /// # async fn search_issues() {
     /// let client = Client::new(
     ///   "https://gitea.example.com",

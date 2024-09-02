@@ -1,7 +1,7 @@
 use std::env;
 
 use reqwest::Method;
-use teatime::{error::Result, Auth, Client};
+use gitea_sdk::{error::Result, Auth, Client};
 use testcontainers::{
     core::{wait::HttpWaitStrategy, IntoContainerPort, WaitFor},
     runners::AsyncRunner,
@@ -18,7 +18,7 @@ static GITEA_REPO: &str = "test-repo";
 static GITEA_REPO_DESCRIPTION: &str = "a test repo";
 
 #[tokio::test]
-pub async fn test_teatime() {
+pub async fn test_client() {
     let wait_strategy = HttpWaitStrategy::new("/user/login")
         .with_port(3000.tcp())
         .with_method(Method::GET)
