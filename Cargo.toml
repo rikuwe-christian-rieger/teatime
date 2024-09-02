@@ -2,6 +2,13 @@
 name = "teatime"
 version = "0.2.0"
 edition = "2021"
+license = "MIT"
+description = "Gitea API client"
+repository = "https://github.com/benpueschel/teatime"
+readme = "README.md"
+authors = ["Ben Püschel"]
+keywords = ["git", "gitea", "api", "client"]
+categories = ["api-bindings"]
 
 [lib]
 
@@ -12,7 +19,7 @@ reqwest = { version = "0.12.5", features = ["json"] }
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.120"
 serde_urlencoded = "0.7.1"
-teatime-macros = { path = "./teatime-macros" }
+teatime-macros = { path = "./teatime-macros", version = "0.1.0" }
 
 [dev-dependencies]
 testcontainers = "0.20.1"
