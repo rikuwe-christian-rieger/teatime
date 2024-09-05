@@ -78,6 +78,21 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_get_user");
     test_get_user(base_url, &token).await?;
 
+    println!("test_create_org");
+    test_create_org(base_url, &token).await?;
+
+    println!("test_get_org");
+    test_get_org(base_url, &token).await?;
+
+    println!("test_edit_org");
+    test_edit_org(base_url, &token).await?;
+
+    println!("test_user_get_orgs");
+    test_user_get_orgs(base_url, &token).await?;
+
+    println!("test_delete_org");
+    test_delete_org(base_url, &token).await?;
+
     println!("test_create_repo");
     test_create_repo(base_url, &token).await?;
 
@@ -169,6 +184,40 @@ pub async fn test_create_org(base_url: &str, token: &str) -> Result<()> {
         .await?;
     assert_eq!(org.name, "test-org");
     assert_eq!(org.description, Some("a test org".to_string()));
+    Ok(())
+}
+
+pub async fn test_get_org(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let org = client.orgs("test-org").get().send(&client).await?;
+    assert_eq!(org.name, "test-org");
+    Ok(())
+}
+
+pub async fn test_edit_org(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let org = client
+        .orgs("test-org")
+        .edit()
+        .description("a new test org".to_string())
+        .send(&client)
+        .await?;
+    assert_eq!(org.name, "test-org");
+    assert_eq!(org.description, Some("a new test org".to_string()));
+    Ok(())
+}
+
+pub async fn test_delete_org(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    client.orgs("test-org").delete().send(&client).await?;
+    Ok(())
+}
+
+pub async fn test_user_get_orgs(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let orgs = client.user().orgs().send(&client).await?;
+    assert_eq!(orgs.len(), 1);
+    assert_eq!(orgs[0].name, "test-org");
     Ok(())
 }
 
