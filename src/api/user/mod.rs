@@ -2,6 +2,7 @@ pub mod create_repo;
 pub mod current;
 pub mod get;
 pub mod list_repos;
+pub mod orgs;
 pub mod tokens;
 
 pub struct User;
@@ -107,6 +108,30 @@ impl User {
     /// ```
     pub fn list_repos(&self) -> list_repos::ListReposBuilder {
         list_repos::ListReposBuilder::new()
+    }
+
+    /// List the current user's organizations.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn list_orgs() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let orgs = client
+    ///     .user()
+    ///     .orgs()
+    ///     .page(2)
+    ///     .limit(10)
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn orgs(&self) -> orgs::Orgs {
+        orgs::Orgs::new()
     }
 
     /// Creates a new access token for a user.
