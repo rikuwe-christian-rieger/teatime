@@ -3,6 +3,15 @@ name: Rust
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - ".github/workflows/rust.yml"
+      - "src/**"
+      - "tests/**"
+      - "examples/**"
+      - "teatime-macros/**"
+      - "test-image/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
   pull_request:
     branches: [ "main" ]
 
