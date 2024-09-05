@@ -63,4 +63,3 @@ pub struct User {
     /// The user's website (empty string if the user did not provide a website).
     pub website: String,
 }
-

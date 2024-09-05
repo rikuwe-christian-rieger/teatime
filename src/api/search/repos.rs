@@ -2,8 +2,8 @@ use build_it::Builder;
 use serde::{Deserialize, Serialize};
 use teatime_macros::QueryParams;
 
-use crate::model::repos::Repository;
 use crate::error::Result;
+use crate::model::repos::Repository;
 
 /// Options for searching repositories.
 /// All fields are optional.

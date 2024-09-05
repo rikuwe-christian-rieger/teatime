@@ -198,6 +198,12 @@ impl Client {
         api::user::User
     }
 
+    pub fn orgs(&self, name: impl ToString) -> api::orgs::Orgs {
+        api::orgs::Orgs {
+            name: name.to_string(),
+        }
+    }
+
     /// Creates a new DELETE-request builder with the given path.
     /// You may use this method to talk to the Gitea API directly if you need to.
     /// `path` will be prefixed with `{base_url}/api/v1/` before the request is sent.

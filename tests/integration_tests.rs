@@ -1,7 +1,7 @@
 use std::env;
 
-use reqwest::Method;
 use gitea_sdk::{error::Result, Auth, Client};
+use reqwest::Method;
 use testcontainers::{
     core::{wait::HttpWaitStrategy, IntoContainerPort, WaitFor},
     runners::AsyncRunner,
@@ -156,6 +156,19 @@ pub async fn test_delete_token(base_url: &str, token: &str) -> Result<()> {
         .delete_access_token(GITEA_USER, token)
         .send(&client)
         .await?;
+    Ok(())
+}
+
+pub async fn test_create_org(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let org = client
+        .orgs("test-org")
+        .create()
+        .description("a test org".to_string())
+        .send(&client)
+        .await?;
+    assert_eq!(org.name, "test-org");
+    assert_eq!(org.description, Some("a test org".to_string()));
     Ok(())
 }
 

@@ -56,7 +56,6 @@ impl From<reqwest::Error> for TeatimeError {
     }
 }
 
-
 impl From<Box<dyn Error>> for TeatimeError {
     fn from(err: Box<dyn Error>) -> Self {
         TeatimeError {
