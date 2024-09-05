@@ -1,7 +1,7 @@
 use build_it::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Result, model::orgs::Visibility, Client};
+use crate::{error::Result, model::orgs::{Organization, Visibility}, Client};
 
 #[derive(Debug, Serialize, Deserialize, Builder)]
 pub struct EditOrgBuilder {
@@ -30,7 +30,7 @@ impl EditOrgBuilder {
             website: None,
         }
     }
-    pub async fn send(&self, client: &Client) -> Result<()> {
+    pub async fn send(&self, client: &Client) -> Result<Organization> {
         let req = client
             .patch(&format!("orgs/{}", self.name))
             .json(&self)

@@ -238,7 +238,7 @@ impl Client {
     /// Sends a request and checks the response for errors.
     /// You may use this method to talk to the Gitea API directly if you need to.
     /// This method will return a [TeatimeError] if the request fails.
-    /// /// NOTE: This method is not recommended for general use. Use the more specific methods
+    /// NOTE: This method is not recommended for general use. Use the more specific methods
     /// provided by the [Client] struct if they exist.
     /// You are responsible for providing the correct Model for the response.
     pub async fn make_request(&self, req: reqwest::Request) -> Result<Response> {
@@ -256,7 +256,7 @@ impl Client {
     /// Parses a json response into a given model.
     /// You may use this method to talk to the Gitea API directly if you need to.
     /// This method will return a [TeatimeError] if the response cannot be deserialized.
-    /// /// NOTE: This method is not recommended for general use. Use the more specific methods
+    /// NOTE: This method is not recommended for general use. Use the more specific methods
     /// provided by the [Client] struct if they exist.
     /// You are responsible for providing the correct Model for the response.
     pub async fn parse_response<T: DeserializeOwned>(&self, res: reqwest::Response) -> Result<T> {

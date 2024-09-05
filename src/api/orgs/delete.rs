@@ -11,7 +11,7 @@ impl DeleteOrgBuilder {
     /// Send the request to delete an [Organization](crate::model::orgs::Organization).
     pub async fn send(&self, client: &crate::Client) -> crate::error::Result<()> {
         let req = client.delete(&format!("orgs/{}", self.name)).build()?;
-        let res = client.make_request(req).await?;
-        client.parse_response(res).await
+        client.make_request(req).await?;
+        Ok(())
     }
 }
