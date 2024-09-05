@@ -174,6 +174,30 @@ impl User {
         tokens::CreateAccessTokenBuilder::new(user, name, scopes)
     }
 
+    /// Lists all access tokens for a user.
+    /// NOTE: This endpoint requires basic authentication and will fail otherwise.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn list_tokens() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Basic("username", "password")
+    /// );
+    /// let tokens = client
+    ///     .user()
+    ///     .list_access_tokens("username")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will list all access tokens for the user "username".
+    pub fn list_access_tokens(&self, username: impl ToString) -> tokens::ListAccessTokensBuilder {
+        tokens::ListAccessTokensBuilder::new(username)
+    }
+
     /// Deletes an access token by its username and token.
     /// This will delete the token and revoke all permissions associated with it.
     /// NOTE: This endpoint requires basic authentication and will fail otherwise.

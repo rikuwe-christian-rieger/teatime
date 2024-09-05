@@ -75,6 +75,9 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_create_token");
     let token = test_create_token(base_url).await?;
 
+    println!("test_list_tokens");
+    test_list_tokens(base_url, &token).await?;
+
     println!("test_get_user");
     test_get_user(base_url, &token).await?;
 
@@ -162,6 +165,18 @@ pub async fn test_create_token(base_url: &str) -> Result<String> {
         .send(&client)
         .await?;
     Ok(token.sha1)
+}
+
+pub async fn test_list_tokens(base_url: &str, _token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Basic(GITEA_USER, GITEA_PASSWORD));
+    let tokens = client
+        .user()
+        .list_access_tokens(GITEA_USER)
+        .send(&client)
+        .await?;
+
+    assert!(tokens.iter().filter(|x| x.name == "gritty-token").count() == 1);
+    Ok(())
 }
 
 pub async fn test_delete_token(base_url: &str, token: &str) -> Result<()> {
