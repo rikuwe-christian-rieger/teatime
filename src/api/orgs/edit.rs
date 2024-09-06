@@ -1,7 +1,11 @@
 use build_it::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Result, model::orgs::{Organization, Visibility}, Client};
+use crate::{
+    error::Result,
+    model::orgs::{Organization, Visibility},
+    Client,
+};
 
 #[derive(Debug, Serialize, Deserialize, Builder)]
 pub struct EditOrgBuilder {

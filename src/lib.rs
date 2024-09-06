@@ -190,6 +190,13 @@ impl Client {
         }
     }
 
+    pub fn pulls(&self, owner: impl ToString, repo: impl ToString) -> api::pulls::Pulls {
+        api::pulls::Pulls {
+            owner: owner.to_string(),
+            repo: repo.to_string(),
+        }
+    }
+
     pub fn search(&self) -> api::search::Search {
         api::search::Search
     }
