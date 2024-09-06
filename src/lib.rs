@@ -205,6 +205,12 @@ impl Client {
         api::user::User
     }
 
+    pub fn users(&self, username: impl ToString) -> api::users::Users {
+        api::users::Users {
+            username: username.to_string(),
+        }
+    }
+
     pub fn orgs(&self, name: impl ToString) -> api::orgs::Orgs {
         api::orgs::Orgs {
             name: name.to_string(),

@@ -5,3 +5,4 @@ pub mod pulls;
 pub mod repos;
 pub mod search;
 pub mod user;
+pub mod users;
