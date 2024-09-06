@@ -27,6 +27,7 @@ pub struct CreateIssueBuilder {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub milestone: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[build_it(rename = "refs")]
     pub r#ref: Option<String>,
 }
 
