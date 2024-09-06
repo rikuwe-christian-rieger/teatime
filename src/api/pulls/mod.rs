@@ -53,7 +53,7 @@ impl Pulls {
     /// client
     ///     .pulls("owner", "repo")
     ///     .edit(1)
-    ///     .title("My PR")
+    ///     .title("My PR".to_string())
     ///     .body("This is my PR".to_string())
     ///     .send(&client)
     ///     .await
