@@ -1,6 +1,5 @@
 use build_it::Builder;
 use serde::Serialize;
-use teatime_macros::QueryParams;
 
 use crate::{error::Result, model::repos::Repository, Client};
 
@@ -49,17 +48,15 @@ impl CreateForkBuilder {
 
 /// Options for listing a repository's forks.
 /// All fields are optional.
-#[derive(Debug, Clone, Serialize, Builder, QueryParams)]
+#[derive(Debug, Clone, Serialize, Builder)]
 #[serde(default)]
 pub struct ListForksBuilder {
     #[skip]
     #[serde(skip)]
-    #[query_params(skip)]
     /// The owner of the repository to list forks for.
     owner: String,
     #[skip]
     #[serde(skip)]
-    #[query_params(skip)]
     /// The name of the repository to list forks for.
     repo: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -86,8 +83,10 @@ impl ListForksBuilder {
         let owner = &self.owner;
         let repo = &self.repo;
 
-        let mut req = client.get(format!("repos/{owner}/{repo}/forks")).build()?;
-        self.append_query_params(&mut req);
+        let req = client
+            .get(format!("repos/{owner}/{repo}/forks"))
+            .query(self)
+            .build()?;
         let res = client.make_request(req).await?;
         client.parse_response(res).await
     }

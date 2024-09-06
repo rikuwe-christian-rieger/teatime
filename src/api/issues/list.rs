@@ -1,31 +1,27 @@
 use build_it::Builder;
 use serde::Serialize;
-use teatime_macros::QueryParams;
 
 use crate::error::Result;
 use crate::model::issues::{Issue, IssueType, State};
 
-#[derive(Debug, Clone, Serialize, Builder, QueryParams)]
+#[derive(Debug, Clone, Serialize, Builder)]
 pub struct ListIssuesBuilder {
     #[skip]
     #[serde(skip)]
-    #[query_params(skip)]
     owner: String,
     #[skip]
     #[serde(skip)]
-    #[query_params(skip)]
     repo: String,
 
     /// Whether issue is open or closed
     pub state: Option<State>,
     /// Comma separated list of labels. Fetch only issues that have any of this labels. Non existent labels are discarded
-    #[query_params(skip)]
     pub labels: Option<Vec<String>>,
     /// Search string
-    #[query_params(rename = "q")]
+    #[serde(rename = "q")]
     pub query: Option<String>,
     /// Filter by type (Issues or Pulls) if set
-    #[query_params(rename = "type")]
+    #[serde(rename = "type")]
     pub issue_type: Option<IssueType>,
     /// Comma-separated list of milestone names or ids. It uses names and fall back to ids.
     /// Fetch only issues that have any of this milestones. Non existent milestones are discarded
@@ -69,13 +65,10 @@ impl ListIssuesBuilder {
     pub async fn send(&self, client: &crate::Client) -> Result<Vec<Issue>> {
         let owner = &self.owner;
         let repo = &self.repo;
-        let mut req = client.get(format!("repos/{owner}/{repo}/issues")).build()?;
-        self.append_query_params(&mut req);
-        if let Some(labels) = &self.labels {
-            req.url_mut()
-                .query_pairs_mut()
-                .append_pair("value", &labels.join(","));
-        }
+        let req = client
+            .get(format!("repos/{owner}/{repo}/issues"))
+            .query(self)
+            .build()?;
         let res = client.make_request(req).await?;
         client.parse_response(res).await
     }

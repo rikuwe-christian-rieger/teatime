@@ -1,11 +1,10 @@
 use build_it::Builder;
 use serde::Serialize;
-use teatime_macros::QueryParams;
 
 use crate::error::Result;
 use crate::model::repos::Repository;
 
-#[derive(Debug, Clone, Serialize, Builder, QueryParams)]
+#[derive(Debug, Clone, Serialize, Builder)]
 pub struct ListReposBuilder {
     /// Page number of results to return (1-based)
     page: Option<i64>,
@@ -23,7 +22,7 @@ impl ListReposBuilder {
 
     /// Send the request to list repositories.
     pub async fn send(&self, client: &crate::Client) -> Result<Vec<Repository>> {
-        let req = client.get("user/repos").build()?;
+        let req = client.get("user/repos").query(self).build()?;
         let res = client.make_request(req).await?;
         client.parse_response(res).await
     }

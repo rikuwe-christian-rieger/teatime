@@ -1,22 +1,19 @@
 use build_it::Builder;
 use serde::Serialize;
-use teatime_macros::QueryParams;
 
 use crate::{error::Result, model::repos::Commit};
 
 /// Options for getting a list of commits from a repository.
 /// All fields are optional.
-#[derive(Debug, Clone, Serialize, Builder, QueryParams)]
+#[derive(Debug, Clone, Serialize, Builder)]
 #[serde(default)]
 pub struct GetCommitsBuilder {
     #[skip]
     #[serde(skip)]
-    #[query_params(skip)]
     /// The owner of the repository to list commits for.
     owner: String,
     #[skip]
     #[serde(skip)]
-    #[query_params(skip)]
     /// The name of the repository to list commits for.
     repo: String,
 
@@ -71,10 +68,10 @@ impl GetCommitsBuilder {
         let owner = &self.owner;
         let repo = &self.repo;
 
-        let mut req = client
+        let req = client
             .get(format!("repos/{owner}/{repo}/commits"))
+            .query(self)
             .build()?;
-        self.append_query_params(&mut req);
         let res = client.make_request(req).await?;
         client.parse_response(res).await
     }

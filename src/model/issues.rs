@@ -74,11 +74,20 @@ pub struct Issue {
     pub original_author_id: i64,
     pub pin_order: i64,
     pub r#ref: String,
-    pub state: State,
+    pub state: StateType,
     pub updated_at: String,
     pub title: String,
     pub url: String,
     pub user: User,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub enum StateType {
+    #[default]
+    #[serde(rename = "open")]
+    Open,
+    #[serde(rename = "closed")]
+    Closed,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
