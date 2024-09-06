@@ -4,6 +4,7 @@ use serde::Serialize;
 use crate::{error::Result, model::pulls::PullRequest, Client};
 
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct CreatePullRequestBuilder {
     #[serde(skip)]
     #[skip]

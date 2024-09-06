@@ -7,6 +7,7 @@ use crate::model::issues::{Issue, IssueType, State};
 /// Options for searching issues.
 /// All fields are optional.
 #[derive(Default, Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct SearchIssuesBuilder {
     /// Filter by open or closed issues
     state: Option<State>,

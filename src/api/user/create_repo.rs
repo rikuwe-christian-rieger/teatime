@@ -9,6 +9,7 @@ use crate::{
 /// Represents the options for creating a new repository.
 /// The only required field is `name`.
 #[derive(Debug, Clone, PartialEq, Serialize, Builder)]
+#[build_it(into)]
 #[serde(default)]
 pub struct CreateRepoBuilder {
     /// Name of the repository to create.

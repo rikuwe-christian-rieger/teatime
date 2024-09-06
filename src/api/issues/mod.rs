@@ -104,7 +104,7 @@ impl Issues {
     /// client
     ///     .issues("owner", "repo")
     ///     .edit(1)
-    ///     .title("new-title".to_string())
+    ///     .title("new-title")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();

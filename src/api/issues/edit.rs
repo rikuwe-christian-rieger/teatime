@@ -4,6 +4,7 @@ use serde::Serialize;
 use crate::{error::Result, model::issues::Issue};
 
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct EditIssueBuilder {
     #[skip]
     #[serde(skip)]

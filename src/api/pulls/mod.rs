@@ -23,7 +23,7 @@ impl Pulls {
     /// let pr = client
     ///     .pulls("owner", "repo")
     ///     .create("my-branch", "main", "My PR")
-    ///     .body("This is my PR".to_string())
+    ///     .body("This is my PR")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();
@@ -53,8 +53,8 @@ impl Pulls {
     /// client
     ///     .pulls("owner", "repo")
     ///     .edit(1)
-    ///     .title("My PR".to_string())
-    ///     .body("This is my PR".to_string())
+    ///     .title("My PR")
+    ///     .body("This is my PR")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();

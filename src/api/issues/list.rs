@@ -5,6 +5,7 @@ use crate::error::Result;
 use crate::model::issues::{Issue, IssueType, State};
 
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct ListIssuesBuilder {
     #[skip]
     #[serde(skip)]

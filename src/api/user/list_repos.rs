@@ -5,6 +5,7 @@ use crate::error::Result;
 use crate::model::repos::Repository;
 
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct ListReposBuilder {
     /// Page number of results to return (1-based)
     page: Option<i64>,

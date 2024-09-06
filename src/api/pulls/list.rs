@@ -11,6 +11,7 @@ use crate::{
 };
 
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct ListPullRequestsBuilder {
     #[skip]
     #[serde(skip)]
@@ -48,7 +49,7 @@ impl ListPullRequestsBuilder {
         let owner = &self.owner;
         let repo = &self.repo;
         let req = client
-            .get(&format!("/repos/{owner}/{repo}/pulls"))
+            .get(format!("/repos/{owner}/{repo}/pulls"))
             .query(self)
             .build()?;
         let res = client.make_request(req).await?;

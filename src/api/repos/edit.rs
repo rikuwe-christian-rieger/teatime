@@ -4,6 +4,7 @@ use serde::Serialize;
 use crate::{error::Result, model::repos::Repository};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Builder)]
+#[build_it(into)]
 #[serde(default)]
 pub struct EditRepoBuilder {
     #[skip]

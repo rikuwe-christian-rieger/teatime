@@ -4,6 +4,7 @@ use serde::Serialize;
 use crate::{model::repos::Repository, Result};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Builder)]
+#[build_it(into)]
 #[serde(default)]
 pub struct MigrateRepoBuilder {
     #[skip]

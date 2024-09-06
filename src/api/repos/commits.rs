@@ -6,6 +6,7 @@ use crate::{error::Result, model::repos::Commit};
 /// Options for getting a list of commits from a repository.
 /// All fields are optional.
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 #[serde(default)]
 pub struct GetCommitsBuilder {
     #[skip]

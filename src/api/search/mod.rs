@@ -20,7 +20,7 @@ impl Search {
     /// let repo = client
     ///     .search()
     ///     .repos()
-    ///     .query("my-repo".to_string())
+    ///     .query("my-repo")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();
@@ -47,7 +47,7 @@ impl Search {
     /// let users = client
     ///    .search()
     ///    .users()
-    ///    .query("my-user".to_string())
+    ///    .query("my-user")
     ///    .send(&client)
     ///    .await
     ///    .unwrap();
@@ -71,7 +71,7 @@ impl Search {
     /// let issues = client
     ///     .search()
     ///     .issues()
-    ///     .query("my-issue".to_string())
+    ///     .query("my-issue")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();

@@ -7,6 +7,7 @@ use crate::model::user::User;
 /// Options for searching users.
 /// All fields are optional.
 #[derive(Default, Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct SearchUsersBuilder {
     /// Keyword to search for
     #[serde(rename = "q")]

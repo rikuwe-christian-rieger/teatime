@@ -8,6 +8,7 @@ use crate::{
 };
 
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct EditPullRequestBuilder {
     #[serde(skip)]
     #[skip]

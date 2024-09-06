@@ -18,7 +18,7 @@
 //!     .user()
 //!     .create_repo("my-new-repo")
 //!     // Optional fields
-//!     .description("This is my new repo".to_string())
+//!     .description("This is my new repo")
 //!     .private(true)
 //!     // Send the request
 //!     .send(&client)
@@ -166,7 +166,7 @@ impl Client {
     /// let repo = client
     ///     .migrate_repo("https://example.git.com/owner/repo", "repo")
     ///     .mirror(true)
-    ///     .mirror_interval("1h".to_string())
+    ///     .mirror_interval("1h")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();

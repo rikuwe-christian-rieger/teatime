@@ -8,6 +8,7 @@ use crate::{
 };
 
 #[derive(Debug, Serialize, Deserialize, Builder)]
+#[build_it(into)]
 pub struct CreateOrgBuilder {
     #[skip]
     username: String,

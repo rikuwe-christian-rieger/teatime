@@ -194,7 +194,7 @@ pub async fn test_create_org(base_url: &str, token: &str) -> Result<()> {
     let org = client
         .orgs("test-org")
         .create()
-        .description("a test org".to_string())
+        .description("a test org")
         .send(&client)
         .await?;
     assert_eq!(org.name, "test-org");
@@ -214,7 +214,7 @@ pub async fn test_edit_org(base_url: &str, token: &str) -> Result<()> {
     let org = client
         .orgs("test-org")
         .edit()
-        .description("a new test org".to_string())
+        .description("a new test org")
         .send(&client)
         .await?;
     assert_eq!(org.name, "test-org");
@@ -248,8 +248,8 @@ pub async fn test_create_repo(base_url: &str, token: &str) -> Result<()> {
     let repo = client
         .user()
         .create_repo(GITEA_REPO)
-        .description(GITEA_REPO_DESCRIPTION.to_string())
-        .license("MIT".to_string())
+        .description(GITEA_REPO_DESCRIPTION)
+        .license("MIT")
         .auto_init(true)
         .send(&client)
         .await?;
@@ -306,7 +306,7 @@ pub async fn test_create_issue(base_url: &str, token: &str) -> Result<()> {
     let issue = client
         .issues(GITEA_USER, GITEA_REPO)
         .create("test issue")
-        .body("test issue body".to_string())
+        .body("test issue body")
         .send(&client)
         .await?;
     assert_eq!(issue.title, "test issue");
@@ -341,7 +341,7 @@ pub async fn test_edit_issue(base_url: &str, token: &str) -> Result<()> {
     let issue = client
         .issues(GITEA_USER, GITEA_REPO)
         .edit(1)
-        .title("my new title".to_string())
+        .title("my new title")
         .unset_due_date(true)
         .send(&client)
         .await?;
@@ -381,8 +381,8 @@ pub async fn test_create_private_repo(base_url: &str, token: &str) -> Result<()>
     let repo = client
         .user()
         .create_repo(GITEA_REPO)
-        .license("MIT".to_string())
-        .description(GITEA_REPO_DESCRIPTION.to_string())
+        .license("MIT")
+        .description(GITEA_REPO_DESCRIPTION)
         .auto_init(true)
         .private(true)
         .send(&client)
@@ -417,7 +417,7 @@ pub async fn test_search_users(base_url: &str, token: &str) -> Result<()> {
     let users = client
         .search()
         .users()
-        .query(GITEA_USER.to_string())
+        .query(GITEA_USER)
         .send(&client)
         .await?;
     assert_eq!(users.len(), 1);

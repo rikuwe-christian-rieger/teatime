@@ -7,6 +7,7 @@ use crate::model::repos::Repository;
 /// Options for searching repositories.
 /// All fields are optional.
 #[derive(Default, Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 pub struct SearchRepositoriesBuilder {
     /// Keyword to search for
     #[serde(rename = "q")]

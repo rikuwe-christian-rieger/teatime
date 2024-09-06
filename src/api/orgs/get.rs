@@ -12,7 +12,7 @@ impl GetOrgBuilder {
     }
     /// Send the request to get an [Organization].
     pub async fn send(&self, client: &Client) -> Result<Organization> {
-        let req = client.get(&format!("orgs/{}", self.name)).build()?;
+        let req = client.get(format!("orgs/{}", self.name)).build()?;
         let res = client.make_request(req).await?;
         client.parse_response(res).await
     }

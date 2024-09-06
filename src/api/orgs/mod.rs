@@ -21,7 +21,7 @@ impl Orgs {
     /// client
     ///     .orgs("org-name")
     ///     .create()
-    ///     .full_name("Organization".to_string())
+    ///     .full_name("Organization")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();
@@ -94,7 +94,7 @@ impl Orgs {
     /// client
     ///     .orgs("org-name")
     ///     .edit()
-    ///     .description("New description".to_string())
+    ///     .description("New description")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();

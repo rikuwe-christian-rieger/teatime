@@ -6,6 +6,7 @@ use crate::{error::Result, model::repos::Repository, Client};
 /// Options for forking a repository.
 /// All fields are optional.
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 #[serde(default)]
 pub struct CreateForkBuilder {
     /// The owner of the repository to fork.
@@ -49,6 +50,7 @@ impl CreateForkBuilder {
 /// Options for listing a repository's forks.
 /// All fields are optional.
 #[derive(Debug, Clone, Serialize, Builder)]
+#[build_it(into)]
 #[serde(default)]
 pub struct ListForksBuilder {
     #[skip]

@@ -78,7 +78,7 @@ impl Repos {
     /// let forked_repo = client
     ///     .repos("owner", "repo")
     ///     .create_fork()
-    ///     .name("my-fork".to_string())
+    ///     .name("my-fork")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();
@@ -97,7 +97,7 @@ impl Repos {
     /// let forked_repo = client
     ///    .repos("owner", "repo")
     ///    .create_fork()
-    ///    .organization("my-org".to_string())
+    ///    .organization("my-org")
     ///    .send(&client)
     ///    .await
     ///    .unwrap();
@@ -122,7 +122,7 @@ impl Repos {
     /// let forked_repo = client
     ///    .repos("owner", "my-new-repo")
     ///    .create_fork()
-    ///    .name("my-new-repo".to_string())
+    ///    .name("my-new-repo")
     ///    .send(&client)
     ///    .await
     ///    .expect_err("Repository with the same name should already exist for the current user");
@@ -150,7 +150,7 @@ impl Repos {
     /// let repo = client
     ///     .repos("owner", "repo")
     ///     .edit()
-    ///     .description("A new description".to_string())
+    ///     .description("A new description")
     ///     .send(&client)
     ///     .await
     ///     .unwrap();

@@ -8,6 +8,7 @@ use crate::{
 };
 
 #[derive(Debug, Serialize, Deserialize, Builder)]
+#[build_it(into)]
 pub struct EditOrgBuilder {
     #[serde(skip)]
     #[skip]
@@ -36,7 +37,7 @@ impl EditOrgBuilder {
     }
     pub async fn send(&self, client: &Client) -> Result<Organization> {
         let req = client
-            .patch(&format!("orgs/{}", self.name))
+            .patch(format!("orgs/{}", self.name))
             .json(&self)
             .build()?;
         let res = client.make_request(req).await?;
