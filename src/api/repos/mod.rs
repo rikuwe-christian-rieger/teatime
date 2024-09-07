@@ -1,3 +1,4 @@
+pub mod branches;
 pub mod commits;
 pub mod delete;
 pub mod edit;
@@ -190,5 +191,120 @@ impl Repos {
     /// ```
     pub fn get_commits(&self) -> commits::GetCommitsBuilder {
         commits::GetCommitsBuilder::new(&self.owner, &self.repo)
+    }
+
+    /// Lists a repository's branches.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn list_branches() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let branches = client
+    ///     .repos("owner", "repo")
+    ///     .list_branches()
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will list the branches for the repository "owner/repo".
+    pub fn list_branches(&self) -> branches::ListBranchesBuilder {
+        branches::ListBranchesBuilder::new(&self.owner, &self.repo)
+    }
+
+    /// Creates a new branch in a repository.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn create_branch() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .repos("owner", "repo")
+    ///     .create_branch("new-branch")
+    ///     .old_ref_name("main")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will create a new branch named "new-branch" in the repository "owner/repo" based on
+    /// the "main" branch.
+    ///
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn create_branch() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .repos("owner", "repo")
+    ///     .create_branch("new-branch")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will create a new empty branch named "new-branch" in the repository "owner/repo"
+    pub fn create_branch(&self, new_branch_name: impl ToString) -> branches::CreateBranchBuilder {
+        branches::CreateBranchBuilder::new(&self.owner, &self.repo, new_branch_name)
+    }
+
+    /// Gets a branch in a repository.
+    /// This will return a [Branch](crate::model::repos::Branch) object if the branch exists.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn get_branch() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let branch = client
+    ///     .repos("owner", "repo")
+    ///     .get_branch("main")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will get the branch "main" in the repository "owner/repo".
+    pub fn get_branch(&self, branch: impl ToString) -> branches::GetBranchBuilder {
+        branches::GetBranchBuilder::new(&self.owner, &self.repo, branch)
+    }
+
+    /// Deletes a branch in a repository.
+    /// WARNING: This is irreversible and will delete all data associated with the branch.
+    /// This action cannot be undone. When invoking this method, you will not be asked for
+    /// confirmation. Use with caution
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn delete_branch() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .repos("owner", "repo")
+    ///     .delete_branch("branch-to-delete")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will delete the branch "branch-to-delete" in the repository "owner/repo".
+    pub fn delete_branch(&self, branch: impl ToString) -> branches::DeleteBranchBuilder {
+        branches::DeleteBranchBuilder::new(&self.owner, &self.repo, branch)
     }
 }

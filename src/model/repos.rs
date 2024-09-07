@@ -155,3 +155,39 @@ pub struct Commit {
     /// The API endpoint URL for the commit.
     pub url: String,
 }
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct PayloadUser {
+    pub email: String,
+    /// Full name of the user.
+    pub name: String,
+    pub username: String,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct PayloadCommit {
+    pub author: PayloadUser,
+    pub committer: PayloadUser,
+    /// sha1 hash of the commit
+    pub id: String,
+    pub message: String,
+    pub added: Option<Vec<String>>,
+    pub modified: Option<Vec<String>>,
+    pub removed: Option<Vec<String>>,
+    pub timestamp: String,
+    pub url: String,
+    // TODO: pub verification: PayloadCommitVerification,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct Branch {
+    pub commit: PayloadCommit,
+    pub effective_branch_protection_name: String,
+    pub enable_status_check: bool,
+    pub name: String,
+    pub protected: bool,
+    pub required_approvals: i64,
+    pub status_check_contexts: Vec<String>,
+    pub user_can_merge: bool,
+    pub user_can_push: bool,
+}
