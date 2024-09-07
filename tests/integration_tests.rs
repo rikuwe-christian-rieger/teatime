@@ -123,6 +123,9 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_list_starred");
     test_list_starred(base_url, &token).await?;
 
+    println!("test_users_list_starred");
+    test_users_list_starred(base_url, &token).await?;
+
     println!("test_unstar_repo");
     test_unstar_repo(base_url, &token).await?;
 
@@ -362,6 +365,18 @@ pub async fn test_star_repo(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_list_starred(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let stars = client.user().list_starred().send(&client).await?;
+    assert_eq!(stars.len(), 1);
+    assert_eq!(stars[0].name, GITEA_REPO);
+    Ok(())
+}
+
+pub async fn test_users_list_starred(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let stars = client
+        .users(GITEA_USER)
+        .list_starred()
+        .send(&client)
+        .await?;
     assert_eq!(stars.len(), 1);
     assert_eq!(stars[0].name, GITEA_REPO);
     Ok(())
