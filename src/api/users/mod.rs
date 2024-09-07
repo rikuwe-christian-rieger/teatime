@@ -1,4 +1,5 @@
 pub mod get;
+pub mod repos;
 pub mod stars;
 
 pub struct Users {
@@ -33,6 +34,29 @@ impl Users {
     ///
     pub fn get(&self) -> get::GetUserBuilder {
         get::GetUserBuilder::new(&self.username)
+    }
+
+    /// Gets the repositories for a user.
+    /// This will return a list of repositories for the user.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn get_repos() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let repos = client
+    ///     .users("username")
+    ///     .list_repos()
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn list_repos(&self) -> repos::ListReposBuilder {
+        repos::ListReposBuilder::new(&self.username)
     }
 
     /// Gets the stars for a user.

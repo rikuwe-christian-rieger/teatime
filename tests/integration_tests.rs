@@ -108,6 +108,9 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_user_list_repos");
     test_user_list_repos(base_url, &token).await?;
 
+    println!("test_users_list_repos");
+    test_users_list_repos(base_url, &token).await?;
+
     println!("test_get_repo");
     test_get_repo(base_url, &token).await?;
 
@@ -303,6 +306,22 @@ pub async fn test_user_list_repos(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let repo = client
         .user()
+        .list_repos()
+        .limit(10)
+        .page(1)
+        .send(&client)
+        .await?;
+    assert_eq!(repo.len(), 1);
+    assert_eq!(repo[0].owner.login, GITEA_USER);
+    assert_eq!(repo[0].name, GITEA_REPO);
+    assert_eq!(repo[0].description, GITEA_REPO_DESCRIPTION);
+    Ok(())
+}
+
+pub async fn test_users_list_repos(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let repo = client
+        .users(GITEA_USER)
         .list_repos()
         .limit(10)
         .page(1)
