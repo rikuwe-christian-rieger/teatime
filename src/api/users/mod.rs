@@ -1,4 +1,5 @@
 pub mod get;
+pub mod orgs;
 pub mod repos;
 pub mod stars;
 
@@ -80,5 +81,27 @@ impl Users {
     /// ```
     pub fn list_starred(&self) -> stars::ListStarredBuilder {
         stars::ListStarredBuilder::new(&self.username)
+    }
+
+    /// Gets the organizations for a user.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn get_orgs() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let orgs = client
+    ///     .users("username")
+    ///     .list_orgs()
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn list_orgs(&self) -> orgs::Orgs {
+        orgs::Orgs::new(&self.username)
     }
 }

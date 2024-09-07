@@ -99,6 +99,9 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_user_get_orgs");
     test_user_get_orgs(base_url, &token).await?;
 
+    println!("test_users_list_orgs");
+    test_users_list_orgs(base_url, &token).await?;
+
     println!("test_delete_org");
     test_delete_org(base_url, &token).await?;
 
@@ -267,6 +270,14 @@ pub async fn test_delete_org(base_url: &str, token: &str) -> Result<()> {
 pub async fn test_user_get_orgs(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let orgs = client.user().orgs().send(&client).await?;
+    assert_eq!(orgs.len(), 1);
+    assert_eq!(orgs[0].name, "test-org");
+    Ok(())
+}
+
+pub async fn test_users_list_orgs(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let orgs = client.users(GITEA_USER).list_orgs().send(&client).await?;
     assert_eq!(orgs.len(), 1);
     assert_eq!(orgs[0].name, "test-org");
     Ok(())
