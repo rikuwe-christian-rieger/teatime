@@ -114,6 +114,18 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_edit_repo");
     test_edit_repo(base_url, &token).await?;
 
+    println!("test_repo_is_starred");
+    test_repo_is_starred(base_url, &token).await?;
+
+    println!("test_star_repo");
+    test_star_repo(base_url, &token).await?;
+
+    println!("test_list_starred");
+    test_list_starred(base_url, &token).await?;
+
+    println!("test_unstar_repo");
+    test_unstar_repo(base_url, &token).await?;
+
     // TODO: test forking - we need a second user for this
     // TODO: test migrating - we need a second repo for this
 
@@ -323,6 +335,45 @@ pub async fn test_edit_repo(base_url: &str, token: &str) -> Result<()> {
     assert_eq!(repo.owner.login, GITEA_USER);
     assert_eq!(repo.name, GITEA_REPO);
     assert_eq!(repo.description, GITEA_REPO_DESCRIPTION);
+    Ok(())
+}
+
+pub async fn test_repo_is_starred(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let starred = client
+        .user()
+        .is_starred(GITEA_USER, GITEA_REPO)
+        .send(&client)
+        .await?;
+    assert!(!starred);
+    Ok(())
+}
+
+pub async fn test_star_repo(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    client
+        .user()
+        .star_repo(GITEA_USER, GITEA_REPO)
+        .send(&client)
+        .await?;
+    Ok(())
+}
+
+pub async fn test_list_starred(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let stars = client.user().list_starred().send(&client).await?;
+    assert_eq!(stars.len(), 1);
+    assert_eq!(stars[0].name, GITEA_REPO);
+    Ok(())
+}
+
+pub async fn test_unstar_repo(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    client
+        .user()
+        .unstar_repo(GITEA_USER, GITEA_REPO)
+        .send(&client)
+        .await?;
     Ok(())
 }
 

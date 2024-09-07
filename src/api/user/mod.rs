@@ -3,6 +3,7 @@ pub mod current;
 pub mod list_repos;
 pub mod orgs;
 pub mod settings;
+pub mod starred;
 pub mod tokens;
 
 pub struct User;
@@ -250,5 +251,109 @@ impl User {
     /// This will update the user's theme to "dark".
     pub fn update_settings(&self) -> settings::UpdateSettingsBuilder {
         settings::UpdateSettingsBuilder::new()
+    }
+
+    /// Lists all repositories starred by the authenticated user.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn list_starred_repos() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let repos = client
+    ///     .user()
+    ///     .list_starred()
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn list_starred(&self) -> starred::ListStarredBuilder {
+        starred::ListStarredBuilder::new()
+    }
+
+    /// Checks if the authenticated user has starred a repository.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn is_starred() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let starred = client
+    ///     .user()
+    ///     .is_starred("owner", "repo")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// if starred {
+    ///     println!("You have starred this repo!");
+    /// } else {
+    ///     println!("You have not starred this repo.");
+    /// }
+    /// # }
+    /// ```
+    pub fn is_starred(
+        &self,
+        owner: impl ToString,
+        repo: impl ToString,
+    ) -> starred::IsStarredBuilder {
+        starred::IsStarredBuilder::new(owner, repo)
+    }
+
+    /// Stars a repository for the authenticated user.
+    /// This will star the repository with the given owner and name.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn star_repo() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .user()
+    ///     .star_repo("owner", "repo")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    /// This will star the repository "repo" owned by "owner".
+    pub fn star_repo(&self, owner: impl ToString, repo: impl ToString) -> starred::StarRepoBuilder {
+        starred::StarRepoBuilder::new(owner, repo)
+    }
+
+    /// Unstars a repository for the authenticated user.
+    /// This will unstar the repository with the given owner and name.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn unstar_repo() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .user()
+    ///     .unstar_repo("owner", "repo")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn unstar_repo(
+        &self,
+        owner: impl ToString,
+        repo: impl ToString,
+    ) -> starred::UnstarRepoBuilder {
+        starred::UnstarRepoBuilder::new(owner, repo)
     }
 }

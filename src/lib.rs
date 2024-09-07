@@ -241,6 +241,13 @@ impl Client {
     pub fn get(&self, path: impl Display) -> reqwest::RequestBuilder {
         self.request_base(Method::GET, path)
     }
+    /// Creates a new PUT-request builder with the given path.
+    /// You may use this method to talk to the Gitea API directly if you need to.
+    /// `path` will be prefixed with `{base_url}/api/v1/` before the request is sent.
+    pub fn put(&self, path: impl Display) -> reqwest::RequestBuilder {
+        self.request_base(Method::PUT, path)
+    }
+
     /// Creates a new request builder with the given method and path.
     /// You may use this method to talk to the Gitea API directly if you need to.
     /// `path` will be prefixed with `{base_url}/api/v1/` before the request is sent.
