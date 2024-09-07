@@ -81,6 +81,12 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_get_user");
     test_get_user(base_url, &token).await?;
 
+    println!("test_user_get_settings");
+    test_user_get_settings(base_url, &token).await?;
+
+    println!("test_user_update_settings");
+    test_user_update_settings(base_url, &token).await?;
+
     println!("test_create_org");
     test_create_org(base_url, &token).await?;
 
@@ -240,6 +246,25 @@ pub async fn test_get_user(base_url: &str, token: &str) -> Result<()> {
     let client = Client::new(base_url, Auth::Token(token));
     let user = client.user().current().send(&client).await?;
     assert_eq!(user.login, GITEA_USER);
+    Ok(())
+}
+
+pub async fn test_user_get_settings(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let settings = client.user().get_settings().send(&client).await?;
+    assert_eq!(settings.full_name, "");
+    Ok(())
+}
+
+pub async fn test_user_update_settings(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let settings = client
+        .user()
+        .update_settings()
+        .full_name("Gritty")
+        .send(&client)
+        .await?;
+    assert_eq!(settings.full_name, "Gritty");
     Ok(())
 }
 

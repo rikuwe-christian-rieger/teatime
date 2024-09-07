@@ -1,6 +1,22 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
+/// Represents a user's settings.
+pub struct UserSettings {
+    pub diff_view_style: String,
+    pub hide_activity: bool,
+    pub full_name: String,
+    pub hide_email: bool,
+    pub theme: String,
+    pub enable_repo_unit_hints: Option<bool>,
+    pub description: Option<String>,
+    pub language: Option<String>,
+    pub location: Option<String>,
+    pub pronouns: Option<String>,
+    pub website: Option<String>,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 /// Represents an access token.
 pub struct AccessToken {
     /// ID of the access token.

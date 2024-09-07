@@ -2,6 +2,7 @@ pub mod create_repo;
 pub mod current;
 pub mod list_repos;
 pub mod orgs;
+pub mod settings;
 pub mod tokens;
 
 pub struct User;
@@ -201,5 +202,53 @@ impl User {
         token: impl ToString,
     ) -> tokens::DeleteAccessTokenBuilder {
         tokens::DeleteAccessTokenBuilder::new(user, token)
+    }
+
+    /// Gets the current user's settings.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn get_settings() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let settings = client
+    ///     .user()
+    ///     .get_settings()
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// println!("User settings: {:?}", settings);
+    /// # }
+    /// ```
+    pub fn get_settings(&self) -> settings::GetSettingsBuilder {
+        settings::GetSettingsBuilder::new()
+    }
+
+    /// Updates the current user's settings.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn update_settings() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let settings = client
+    ///     .user()
+    ///     .update_settings()
+    ///     .theme("dark")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// println!("User settings: {:?}", settings);
+    /// # }
+    /// ```
+    /// This will update the user's theme to "dark".
+    pub fn update_settings(&self) -> settings::UpdateSettingsBuilder {
+        settings::UpdateSettingsBuilder::new()
     }
 }
