@@ -90,6 +90,15 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_create_org");
     test_create_org(base_url, &token).await?;
 
+    println!("test_org_create_repo");
+    test_org_create_repo(base_url, &token).await?;
+
+    println!("test_org_list_repos");
+    test_org_list_repos(base_url, &token).await?;
+
+    println!("test_org_delete_repo");
+    test_org_delete_repo(base_url, &token).await?;
+
     println!("test_get_org");
     test_get_org(base_url, &token).await?;
 
@@ -258,6 +267,41 @@ pub async fn test_edit_org(base_url: &str, token: &str) -> Result<()> {
         .await?;
     assert_eq!(org.name, "test-org");
     assert_eq!(org.description, Some("a new test org".to_string()));
+    Ok(())
+}
+
+pub async fn test_org_create_repo(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let repo = client
+        .orgs("test-org")
+        .create_repo("test-repo")
+        .description("a test repo")
+        .auto_init(true)
+        .license("MIT")
+        .send(&client)
+        .await?;
+
+    assert_eq!(repo.name, "test-repo");
+    assert_eq!(repo.description, "a test repo");
+    Ok(())
+}
+
+pub async fn test_org_delete_repo(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    client
+        .repos("test-org", "test-repo")
+        .delete()
+        .send(&client)
+        .await?;
+    Ok(())
+}
+
+pub async fn test_org_list_repos(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let repos = client.orgs("test-org").list_repos().send(&client).await?;
+
+    assert_eq!(repos.len(), 1);
+    assert_eq!(repos[0].name, "test-repo");
     Ok(())
 }
 
