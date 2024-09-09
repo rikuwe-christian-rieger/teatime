@@ -5,6 +5,7 @@ pub mod edit;
 pub mod get;
 pub mod list_repos;
 pub mod members;
+pub mod public_members;
 
 pub struct Orgs {
     pub name: String,
@@ -223,5 +224,105 @@ impl Orgs {
     /// ```
     pub fn remove_member(&self, username: impl ToString) -> members::RemoveMemberBuilder {
         members::RemoveMemberBuilder::new(self.name.clone(), username)
+    }
+
+    /// List the public members of an [Organization](crate::model::orgs::Organization).
+    /// This will return a list of [User] objects.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn list_public_members() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let public_members = client
+    ///     .orgs("org-name")
+    ///     .list_public_members()
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn list_public_members(&self) -> public_members::ListPublicMembersBuilder {
+        public_members::ListPublicMembersBuilder::new(self.name.clone())
+    }
+
+    /// Check if a user is a public member of an [Organization](crate::model::orgs::Organization).
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn is_public_member() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let is_public_member = client
+    ///     .orgs("org-name")
+    ///     .is_public_member("username")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn is_public_member(
+        &self,
+        username: impl ToString,
+    ) -> public_members::IsPublicMemberBuilder {
+        public_members::IsPublicMemberBuilder::new(self.name.clone(), username)
+    }
+
+    /// Conceal a user's membership in an [Organization](crate::model::orgs::Organization).
+    /// This will hide the user from the organization's public members list.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn conceal_membership() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .orgs("org-name")
+    ///     .conceal_membership("username")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn conceal_membership(
+        &self,
+        username: impl ToString,
+    ) -> public_members::ConcealMembershipBuilder {
+        public_members::ConcealMembershipBuilder::new(self.name.clone(), username)
+    }
+
+    /// Publicize a user's membership in an [Organization](crate::model::orgs::Organization).
+    /// This will make the user visible in the organization's public members list.
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn publicize_membership() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .orgs("org-name")
+    ///     .publicize_membership("username")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn publicize_membership(
+        &self,
+        username: impl ToString,
+    ) -> public_members::PublicizeMembershipBuilder {
+        public_members::PublicizeMembershipBuilder::new(self.name.clone(), username)
     }
 }

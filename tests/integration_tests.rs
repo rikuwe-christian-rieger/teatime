@@ -90,6 +90,18 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_create_org");
     test_create_org(base_url, &token).await?;
 
+    println!("test_org_is_public_member");
+    test_org_is_public_member(base_url, &token).await?;
+
+    println!("test_org_conceal_membership");
+    test_org_conceal_membership(base_url, &token).await?;
+
+    println!("test_org_publicize_membership");
+    test_org_publicize_membership(base_url, &token).await?;
+
+    println!("test_org_list_public_members");
+    test_org_list_public_members(base_url, &token).await?;
+
     println!("test_org_list_members");
     test_org_list_members(base_url, &token).await?;
 
@@ -255,6 +267,49 @@ pub async fn test_create_org(base_url: &str, token: &str) -> Result<()> {
         .await?;
     assert_eq!(org.name, "test-org");
     assert_eq!(org.description, Some("a test org".to_string()));
+    Ok(())
+}
+
+pub async fn test_org_is_public_member(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let is_public_member = client
+        .orgs("test-org")
+        .is_public_member(GITEA_USER)
+        .send(&client)
+        .await?;
+    assert!(!is_public_member);
+    Ok(())
+}
+
+pub async fn test_org_conceal_membership(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    client
+        .orgs("test-org")
+        .conceal_membership(GITEA_USER)
+        .send(&client)
+        .await?;
+    Ok(())
+}
+
+pub async fn test_org_publicize_membership(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    client
+        .orgs("test-org")
+        .publicize_membership(GITEA_USER)
+        .send(&client)
+        .await?;
+    Ok(())
+}
+
+pub async fn test_org_list_public_members(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let public_members = client
+        .orgs("test-org")
+        .list_public_members()
+        .send(&client)
+        .await?;
+    assert_eq!(public_members.len(), 1);
+    assert_eq!(public_members[0].login, GITEA_USER);
     Ok(())
 }
 
