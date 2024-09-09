@@ -90,6 +90,14 @@ pub async fn test(base_url: &str) -> Result<()> {
     println!("test_create_org");
     test_create_org(base_url, &token).await?;
 
+    println!("test_org_list_members");
+    test_org_list_members(base_url, &token).await?;
+
+    println!("test_org_is_member");
+    test_org_is_member(base_url, &token).await?;
+
+    // TODO: remove member from org
+
     println!("test_org_create_repo");
     test_org_create_repo(base_url, &token).await?;
 
@@ -247,6 +255,31 @@ pub async fn test_create_org(base_url: &str, token: &str) -> Result<()> {
         .await?;
     assert_eq!(org.name, "test-org");
     assert_eq!(org.description, Some("a test org".to_string()));
+    Ok(())
+}
+
+pub async fn test_org_list_members(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let org = client.orgs("test-org").list_members().send(&client).await?;
+    assert_eq!(org.len(), 1);
+    assert_eq!(org[0].login, GITEA_USER);
+    Ok(())
+}
+
+pub async fn test_org_is_member(base_url: &str, token: &str) -> Result<()> {
+    let client = Client::new(base_url, Auth::Token(token));
+    let is_member = client
+        .orgs("test-org")
+        .is_member(GITEA_USER)
+        .send(&client)
+        .await?;
+    assert!(is_member);
+    let is_member = client
+        .orgs("test-org")
+        .is_member("not-a-member")
+        .send(&client)
+        .await?;
+    assert!(!is_member);
     Ok(())
 }
 

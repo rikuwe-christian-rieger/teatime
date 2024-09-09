@@ -4,6 +4,7 @@ pub mod delete;
 pub mod edit;
 pub mod get;
 pub mod list_repos;
+pub mod members;
 
 pub struct Orgs {
     pub name: String,
@@ -156,5 +157,71 @@ impl Orgs {
     /// ```
     pub fn create_repo(&self, name: impl ToString) -> create_repo::CreateRepoBuilder {
         create_repo::CreateRepoBuilder::new(self.name.clone(), name)
+    }
+
+    /// List the members of an [Organization](crate::model::orgs::Organization).
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn list_members() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let members = client
+    ///     .orgs("org-name")
+    ///     .list_members()
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn list_members(&self) -> members::ListMembersBuilder {
+        members::ListMembersBuilder::new(self.name.clone())
+    }
+
+    /// Check if a user is a member of an [Organization](crate::model::orgs::Organization).
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn is_member() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// let is_member = client
+    ///     .orgs("org-name")
+    ///     .is_member("username")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn is_member(&self, username: impl ToString) -> members::IsMemberBuilder {
+        members::IsMemberBuilder::new(self.name.clone(), username)
+    }
+
+    /// Remove a user from an [Organization](crate::model::orgs::Organization).
+    ///
+    /// # Example
+    /// ```
+    /// # use gitea_sdk::{Client, Auth};
+    /// # async fn remove_member() {
+    /// let client = Client::new(
+    ///     "https://gitea.example.com",
+    ///     Auth::Token("your-token")
+    /// );
+    /// client
+    ///     .orgs("org-name")
+    ///     .remove_member("username")
+    ///     .send(&client)
+    ///     .await
+    ///     .unwrap();
+    /// # }
+    /// ```
+    pub fn remove_member(&self, username: impl ToString) -> members::RemoveMemberBuilder {
+        members::RemoveMemberBuilder::new(self.name.clone(), username)
     }
 }
