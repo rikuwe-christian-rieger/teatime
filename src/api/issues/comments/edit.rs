@@ -50,6 +50,9 @@ impl EditCommentBuilder {
             .json(&self)
             .build()?;
         let res = client.make_request(req).await?;
+        if res.status() == 204 {
+            return Ok(None);
+        }
         client.parse_response(res).await
     }
 }

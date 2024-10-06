@@ -689,9 +689,9 @@ pub async fn test_edit_comment(base_url: &str, token: &str) -> Result<()> {
         .edit(1, "totally different test comment")
         .send(&client)
         .await?;
-    assert!(comment.is_some());
-    let comment = comment.unwrap();
-    assert_eq!(comment.body, "totally different test comment");
+    if let Some(comment) = comment {
+        assert_eq!(comment.body, "totally different test comment");
+    }
     Ok(())
 }
 
