@@ -75,8 +75,8 @@ impl UpdateUserBuilder {
             visibility: None,
         }
     }
-    /// Send the request to create the user.
-    /// This will return the created [User].
+    /// Send the request to update the user.
+    /// This will return the updated [User].
     pub async fn send(&self, client: &Client) -> Result<User> {
         let username = &self.username;
         let req = client
