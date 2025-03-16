@@ -1,7 +1,7 @@
 use build_it::Builder;
 use serde::Serialize;
 
-use crate::{error::Result, model::user::User, Client};
+use crate::{error::Result, model::issues::Label, Client};
 
 /// Represents the options for creating a new user.
 /// The only required field is `email` and `username`.
@@ -46,14 +46,14 @@ impl EditLabelBuilder {
         }
     }
 
-    /// Send the request to create the user.
-    /// This will return the created [User].
-    pub async fn send(&self, client: &Client) -> Result<User> {
+    /// Send the request to create the label.
+    /// This will return the created [Label].
+    pub async fn send(&self, client: &Client) -> Result<Label> {
         let owner = &self.owner;
         let repo = &self.repo;
         let id = &self.id;
         let req = client
-            .post(format!("repos/{owner}/{repo}/labels/{id}"))
+            .patch(format!("repos/{owner}/{repo}/labels/{id}"))
             .json(self)
             .build()?;
         let res = client.make_request(req).await?;

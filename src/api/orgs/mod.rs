@@ -6,6 +6,7 @@ pub mod get;
 pub mod list_repos;
 pub mod members;
 pub mod public_members;
+pub mod teams;
 
 pub struct Orgs {
     pub name: String,
