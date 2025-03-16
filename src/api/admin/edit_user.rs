@@ -12,7 +12,7 @@ pub struct EditUserBuilder {
     #[build_it(skip)]
     #[serde(skip)]
     /// the username of the user
-    username: String,
+    pub username: String,
     #[build_it(skip)]
     /// The source id
     pub source_id: i64,
