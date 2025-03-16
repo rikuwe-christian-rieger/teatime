@@ -41,7 +41,7 @@ pub struct User {
     pub avatar_url: String,
     /// Date the user was created at.
     pub created: String,
-    /// Description of the user (empty string if the user did not provide a discription).
+    /// Description of the user (empty string if the user did not provide a description).
     pub description: String,
     /// Email of the user.
     pub email: String,
