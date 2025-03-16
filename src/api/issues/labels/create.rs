@@ -8,7 +8,7 @@ use crate::{error::Result, model::issues::Label, Client};
 #[derive(Debug, Clone, PartialEq, Serialize, Builder)]
 #[build_it(into)]
 #[serde(default)]
-pub struct CreateLabelBuilder {
+pub struct CreateRepoLabelBuilder {
     #[build_it(skip)]
     #[skip]
     #[serde(skip)]
@@ -30,7 +30,7 @@ pub struct CreateLabelBuilder {
     pub is_archived: Option<bool>,
 }
 
-impl CreateLabelBuilder {
+impl CreateRepoLabelBuilder {
     pub fn new(
         owner: impl ToString,
         repo: impl ToString,

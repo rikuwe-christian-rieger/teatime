@@ -12,14 +12,14 @@ use crate::{
 pub struct EditOrgBuilder {
     #[serde(skip)]
     #[skip]
-    name: String,
-    description: Option<String>,
-    email: Option<String>,
-    full_name: Option<String>,
-    location: Option<String>,
-    repo_admin_change_team_access: Option<bool>,
-    visibility: Option<Visibility>,
-    website: Option<String>,
+    pub name: String,
+    pub description: Option<String>,
+    pub email: Option<String>,
+    pub full_name: Option<String>,
+    pub location: Option<String>,
+    pub repo_admin_change_team_access: Option<bool>,
+    pub visibility: Option<Visibility>,
+    pub website: Option<String>,
 }
 
 impl EditOrgBuilder {
