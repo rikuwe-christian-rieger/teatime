@@ -11,12 +11,14 @@ use crate::{error::Result, model::user::User, Client};
 pub struct EditUserBuilder {
     #[build_it(skip)]
     #[serde(skip)]
-    /// The user's authenticated sign-in name. Empty by default.
-    pub login_name: String,
+    /// the username of the user
+    username: String,
     #[build_it(skip)]
     /// The source id
     pub source_id: i64,
     #[build_it(skip)]
+    /// The user's authenticated sign-in name. Empty by default.
+    pub login_name: String,
     /// Whether user is admin
     pub admin: Option<bool>,
     /// Whether user is allowdd to create organizations
@@ -51,8 +53,9 @@ pub struct EditUserBuilder {
 }
 
 impl EditUserBuilder {
-    pub fn new(login_name: impl ToString, source_id: i64) -> Self {
+    pub fn new(username: impl ToString, login_name: impl ToString, source_id: i64) -> Self {
         Self {
+            username: username.to_string(),
             source_id,
             login_name: login_name.to_string(),
             admin: None,
