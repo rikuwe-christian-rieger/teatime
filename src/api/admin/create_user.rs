@@ -15,14 +15,15 @@ pub struct CreateUserBuilder {
     #[build_it(skip)]
     /// Username of the user.
     pub username: String,
+    #[build_it(skip)]
+    /// The password of the user
+    pub password: String,
     /// Date the user was created at.
     pub created_at: Option<String>,
     /// Full name of the user.
     pub full_name: Option<String>,
     /// If the user needs to change the password.
     pub must_change_password: Option<String>,
-    /// The password of the user
-    pub password: Option<String>,
     /// Whether the user is restricted.
     pub restricted: Option<bool>,
     /// Whether to send notifications
@@ -37,14 +38,14 @@ pub struct CreateUserBuilder {
 }
 
 impl CreateUserBuilder {
-    pub fn new(email: impl ToString, username: impl ToString) -> Self {
+    pub fn new(email: impl ToString, username: impl ToString, password: impl ToString) -> Self {
         Self {
             email: email.to_string(),
             username: username.to_string(),
             created_at: None,
             full_name: None,
             must_change_password: None,
-            password: None,
+            password: password.to_string(),
             restricted: None,
             send_notify: None,
             source_id: None,

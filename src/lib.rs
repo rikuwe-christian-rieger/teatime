@@ -109,7 +109,8 @@ impl Client {
         let mut headers = HeaderMap::new();
         match auth {
             Auth::Token(token) => {
-                let token = HeaderValue::from_str(&token.to_string()).expect("token error");
+                let token = HeaderValue::from_str(&format!("token {}", token.to_string()))
+                    .expect("token error");
                 headers.insert(header::AUTHORIZATION, token);
             }
             Auth::Basic(user, pass) => {
