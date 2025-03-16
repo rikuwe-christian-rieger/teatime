@@ -13,9 +13,8 @@ pub struct EditUserBuilder {
     #[serde(skip)]
     /// the username of the user
     pub username: String,
-    #[build_it(skip)]
     /// The source id
-    pub source_id: i64,
+    pub source_id: Option<i64>,
     #[build_it(skip)]
     /// The user's authenticated sign-in name. Empty by default.
     pub login_name: String,
@@ -53,10 +52,10 @@ pub struct EditUserBuilder {
 }
 
 impl EditUserBuilder {
-    pub fn new(username: impl ToString, login_name: impl ToString, source_id: i64) -> Self {
+    pub fn new(username: impl ToString, login_name: impl ToString) -> Self {
         Self {
             username: username.to_string(),
-            source_id,
+            source_id: None,
             login_name: login_name.to_string(),
             admin: None,
             allow_create_organization: None,
