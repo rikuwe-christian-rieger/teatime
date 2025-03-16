@@ -8,7 +8,7 @@ use crate::{error::Result, model::user::User, Client};
 #[derive(Debug, Clone, PartialEq, Serialize, Builder)]
 #[build_it(into)]
 #[serde(default)]
-pub struct UpdateUserBuilder {
+pub struct EditUserBuilder {
     #[build_it(skip)]
     #[serde(skip)]
     /// the username of the user
@@ -52,7 +52,7 @@ pub struct UpdateUserBuilder {
     pub visibility: Option<String>,
 }
 
-impl UpdateUserBuilder {
+impl EditUserBuilder {
     pub fn new(username: impl ToString, login_name: impl ToString, source_id: i64) -> Self {
         Self {
             username: username.to_string(),
