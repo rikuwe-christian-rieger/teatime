@@ -15,7 +15,7 @@ pub struct EditRepoBuilder {
     owner: String,
     #[skip]
     #[serde(skip)]
-    repo: String,
+    pub repo: String,
 
     /// Either `true` to allow fast-forward-only merging pull requests, or `false` to prevent fast-forward-only merging.
     allow_fast_forward_only_merge: Option<bool>,
@@ -70,7 +70,7 @@ pub struct EditRepoBuilder {
     /// Set to a string like `8h30m0s` to set the mirror interval time
     mirror_interval: Option<String>,
     /// Name of the repository
-    name: Option<String>,
+    pub name: Option<String>,
     /// Either `true` to make the repository private or `false` to make it public.
     ///
     /// NOTE: you will get a 422 error if the organization restricts changing repository visibility
