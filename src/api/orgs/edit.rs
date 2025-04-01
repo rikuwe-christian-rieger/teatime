@@ -7,7 +7,7 @@ use crate::{
     Client,
 };
 
-#[derive(Debug, Serialize, Deserialize, Builder)]
+#[derive(Debug, Serialize, Clone, Deserialize, Builder)]
 #[build_it(into)]
 pub struct EditOrgBuilder {
     #[serde(skip)]

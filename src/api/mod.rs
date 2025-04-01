@@ -1,4 +1,5 @@
 pub mod admin;
+pub mod avatar;
 pub mod issues;
 pub mod list;
 pub mod migrate;
