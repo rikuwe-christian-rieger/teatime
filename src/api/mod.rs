@@ -1,5 +1,6 @@
 pub mod admin;
 pub mod issues;
+pub mod list;
 pub mod migrate;
 pub mod orgs;
 pub mod pulls;
